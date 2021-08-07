@@ -8,3 +8,7 @@ __pycache__/
 /docs/docs/_build/
 
 /docs/node_modules/
+
+/templates
+
+!/templates/move_static.sh
