@@ -1,0 +1,10 @@
+
+venv/
+
+__pycache__/
+
+.idea/
+
+/docs/docs/_build/
+
+/docs/node_modules/
