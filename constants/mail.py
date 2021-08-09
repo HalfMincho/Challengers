@@ -2,7 +2,7 @@ mail_verification_mail_body = "<p>안녕하세요, Challengers입니다.</p>" \
                               "<p></p>" \
                               "<p>본인이 회원가입을 요청하신 것이 맞다면 다음 링크를 눌러 회원가입을 계속 진행해주세요.</p>" \
                               "<p>아니라면 이 메일을 무시해 주세요.</p>" \
-                              "<a href=\"https://test.gistory.me/sign-up?token={token}\">회원가입 페이지로</a>"
+                              "<p>인증코드: {token}</p>"
 
 password_change_mail_body = "안녕하세요, Challengers입니다.\n\n"\
                             "계정 비밀번호가 변경되었습니다.\n" \

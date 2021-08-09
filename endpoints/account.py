@@ -27,9 +27,9 @@ def issue_register_token(data):
         return {'success': True}, 201
 
 
-@account_blueprint.route('verify-token', methods=['GET', 'OPTIONS'])
+@account_blueprint.route('/verify-token', methods=['POST', 'OPTIONS'])
 @cors_allow(frontend_address)
-@is_api(required_keys=['token', 'email'])
+@is_api(required_keys=['token', 'email'], input_type='json')
 def verify_register_token(data):
     if account.verify_register_token(data['email'], data['token']):
         return {'message': 'token_verified'}, 200
