@@ -20,7 +20,7 @@ def issue_register_token(data):
     if token is None:
         return {'error': 'token_generation_failed'}, 500
 
-    if not mailer.send_one(data['email'], 'GISTORY user', 'GISTORY: 회원가입을 위한 메일 인증',
+    if not mailer.send_one(data['email'], 'Challengers user', 'Challengers: 회원가입을 위한 메일 인증',
                            constants.mail.mail_verification_mail_body.format(token=token), "html"):
         return {'error': 'sending_mail_failed'}, 500
     else:

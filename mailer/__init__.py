@@ -20,7 +20,7 @@ def send_one(rcpt_addr: str, rcpt_name: Union[str, None], mail_title: str, mail_
         message = MIMEMultipart()
 
         message['Subject'] = mail_title
-        message['From'] = f'GISTORY.me admin<{config.username}>'
+        message['From'] = f'Challengers admin<{config.username}>'
         message['To'] = f'{rcpt_name}<{rcpt_addr}>'
 
         message.attach(MIMEText(_text=mail_body, _charset='utf-8', _subtype=sub_type))
