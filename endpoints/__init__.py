@@ -137,7 +137,7 @@ def protected(verify: bool = False):
             if verify:
                 if not token.verify(auth):
                     return jsonify({'error': 'no_permission'}), 403
-            return func(True, owner, auth, *args, **kwargs)
+            return func(owner, auth, *args, **kwargs)
         return wrapper
     return decorator
 

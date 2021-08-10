@@ -9,20 +9,14 @@ import uuid
 import mailer
 
 
-def get_uuid(id=None, email=None) -> Union[uuid.UUID, None]:
-    if not isinstance(id, str):
-        id = None
+def get_uuid(email=None) -> Union[uuid.UUID, None]:
     if not isinstance(email, str):
         email = None
 
-    if id is None and email is None:
-        raise ValueError('Neither username or email must be provided as string.')
+    if email is None:
+        raise ValueError('Email must be provided as string.')
 
     sql = MySQL()
-    if id is not None:
-        ret = sql.query('SELECT uuid FROM account WHERE id LIKE %s', (id, ))
-        if len(ret) == 1:
-            return uuid.UUID(bytes=ret[0][0])
 
     if email is not None:
         ret = sql.query('SELECT uuid FROM account WHERE email LIKE %s', (email, ))
@@ -119,10 +113,10 @@ def register(name: str, email: str, password: str, token: str,) -> Tuple[bool, U
         return True, None
 
 
-def login(id: str, password: str) -> bool:
+def login(email: str, password: str) -> bool:
     sql = MySQL()
 
-    pw_hash = sql.query('SELECT password FROM account WHERE id LIKE %s', (id, ))
+    pw_hash = sql.query('SELECT password FROM account WHERE email LIKE %s', (email, ))
     if len(pw_hash) != 1:
         return False
 

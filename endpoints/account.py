@@ -53,12 +53,12 @@ def register(data):
 
 @account_blueprint.route('/login', methods=['POST', 'OPTIONS'])
 @cors_allow()
-@is_api(required_keys=['username', 'password'], input_type='json')
+@is_api(required_keys=['email', 'password'], input_type='json')
 def login(data):
     if not account.login(**data):
         return {'error': 'authentication_failed'}, 403
 
-    user_uuid = account.get_uuid(id=data['id'])
+    user_uuid = account.get_uuid(email=data['email'])
 
     if user_uuid is None:
         return {'error': 'authentication_failed'}, 403
