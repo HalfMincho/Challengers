@@ -20,16 +20,16 @@ def issue_register_token(data):
     if token is None:
         return {'error': 'token_generation_failed'}, 500
 
-    if not mailer.send_one(data['email'], 'GISTORY user', 'GISTORY: 회원가입을 위한 메일 인증',
+    if not mailer.send_one(data['email'], 'Challengers user', 'Challengers: 회원가입을 위한 메일 인증',
                            constants.mail.mail_verification_mail_body.format(token=token), "html"):
         return {'error': 'sending_mail_failed'}, 500
     else:
         return {'success': True}, 201
 
 
-@account_blueprint.route('verify-token', methods=['GET', 'OPTIONS'])
+@account_blueprint.route('/verify-token', methods=['POST', 'OPTIONS'])
 @cors_allow(frontend_address)
-@is_api(required_keys=['token', 'email'])
+@is_api(required_keys=['token', 'email'], input_type='json')
 def verify_register_token(data):
     if account.verify_register_token(data['email'], data['token']):
         return {'message': 'token_verified'}, 200
@@ -39,10 +39,8 @@ def verify_register_token(data):
 
 @account_blueprint.route('/register', methods=['POST', 'OPTIONS'])
 @cors_allow(frontend_address)
-@is_api(required_keys=['name', 'email', 'token', 'id', 'password', 'phone_number'], input_type='json')
+@is_api(required_keys=['name', 'email', 'token', 'password'], input_type='json')
 def register(data):
-    if not account.verify_register_token(data['email'], data['token']):
-        return {'error': 'register_token_verification_failed'}, 400
 
     state, error_code = account.register(**data)
 
