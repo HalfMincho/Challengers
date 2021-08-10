@@ -76,10 +76,16 @@ def verify_register_token(email: str, token: str) -> bool:
         return True
 
 
-def register(name: str, email: str, id: str, password: str, token: str,
-             phone_number: str) -> Tuple[bool, Union[str, None]]:
+
+def register(name: str, email: str, password: str, token: str,) -> Tuple[bool, Union[str, None]]:
     sql = MySQL()
     user_uuid = uuid.uuid4()
+
+    if sql.query('SELECT COUNT(*) FROM mail_verification WHERE token=%s AND email=%s AND used=1',
+                 (token, email,))[0][0] != 1:
+        return False, 'token verification is needed'
+
+
     while True:
         if sql.query('SELECT COUNT(*) FROM account WHERE uuid=%s', (user_uuid.bytes, ))[0][0] == 0:
             break
@@ -92,11 +98,6 @@ def register(name: str, email: str, id: str, password: str, token: str,
     elif len(email) > 255:
         return False, 'email_too_long'
 
-    if sql.query('SELECT COUNT(*) FROM account WHERE id LIKE %s', (id, ))[0][0] != 0:
-        return False, 'id_exists'
-    elif len(id) > 100:
-        return False, 'id_too_long'
-
     if len(name) > 255:
         return False, 'name_too_long'
 
@@ -105,9 +106,9 @@ def register(name: str, email: str, id: str, password: str, token: str,
     sql.transaction.start()
 
     try:
-        sql.query('INSERT INTO account (uuid, email, id, password, name, phone-number)'
-                  ' VALUE (%s, %s, %s, %s, %s, %s)',
-                  (user_uuid.bytes, email, id, password, name, phone_number, ))
+        sql.query('INSERT INTO account (uuid, email, password, name)'
+                  'VALUE (%s, %s, %s, %s)',
+                  (user_uuid.bytes, email, password, name))
         sql.query('DELETE FROM mail_verification WHERE token=%s', (token, ))
 
     except:

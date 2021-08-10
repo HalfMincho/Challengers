@@ -39,10 +39,8 @@ def verify_register_token(data):
 
 @account_blueprint.route('/register', methods=['POST', 'OPTIONS'])
 @cors_allow(frontend_address)
-@is_api(required_keys=['name', 'email', 'token', 'id', 'password', 'phone_number'], input_type='json')
+@is_api(required_keys=['name', 'email', 'token', 'password'], input_type='json')
 def register(data):
-    if not account.verify_register_token(data['email'], data['token']):
-        return {'error': 'register_token_verification_failed'}, 400
 
     state, error_code = account.register(**data)
 
