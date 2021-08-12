@@ -66,5 +66,18 @@ export function useSignUp() {
   };
 
 
-  return { name, password, passwordConfirm, nickname, email, emailError, passwordError, passwordLengthError, onChange, onChangeEmail, onChangePassword, onChangePasswordCheck };
+  return {
+    name,
+    password,
+    passwordConfirm,
+    nickname,
+    email,
+    emailError,
+    passwordError,
+    passwordLengthError,
+    onChange,
+    onChangeEmail,
+    onChangePassword,
+    onChangePasswordCheck
+  };
 }

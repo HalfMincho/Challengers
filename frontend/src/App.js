@@ -2,6 +2,7 @@ import React from "react";
 import { Route } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import Header from "./components/Header";
+import SignUp from "./components/SignUp";
 
 const GlobalStyle = createGlobalStyle`
   body {  
@@ -16,6 +17,7 @@ function App() {
       <Route path="/page" component={} exact />
     </div> */}
     <Header />
+    <SignUp />
     </>
   );
 }

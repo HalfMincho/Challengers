@@ -1,0 +1,36 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\banga\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js init
+
+PATH: 
+  C:\Users\banga\Documents\cmder\vendor\conemu-maximus5\ConEmu\Scripts;C:\Users\banga\Documents\cmder\vendor\conemu-maximus5;C:\Users\banga\Documents\cmder\vendor\conemu-maximus5\ConEmu;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\ProgramData\chocolatey\bin;C:\Program Files\nodejs\;C:\Program Files\OpenJDK\openjdk-8u302-b08\bin;C:\Users\banga\AppData\Local\Android\Sdk\platform-tools;C:\Users\banga\AppData\Local\Android\Sdk\platform-tools;C:\Users\banga\AppData\Local\Programs\Python\Python39\Scripts\;C:\Users\banga\AppData\Local\Programs\Python\Python39\;C:\Users\banga\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Bandizip\;C:\Users\banga\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\Java\jdk1.8.0_281\bin;C:\Users\banga\AppData\Local\atom\bin;C:\Users\banga\Documents\cmder;C:\Users\banga\AppData\Local\Microsoft\WindowsApps;C:\Users\banga\AppData\Local\gitkraken\bin;C:\Users\banga\AppData\Roaming\npm;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\banga\Documents\cmder\vendor\bin
+
+Yarn version: 
+  1.22.10
+
+Node version: 
+  16.5.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: canceled
+      at Interface.<anonymous> (C:\Users\banga\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:136216:13)
+      at Interface.emit (node:events:394:28)
+      at Interface._ttyWrite (node:readline:1081:16)
+      at ReadStream.onkeypress (node:readline:288:10)
+      at ReadStream.emit (node:events:394:28)
+      at emitKeys (node:internal/readline/utils:358:14)
+      at emitKeys.next (<anonymous>)
+      at ReadStream.onData (node:internal/readline/emitKeypressEvents:61:36)
+      at ReadStream.emit (node:events:394:28)
+      at addChunk (node:internal/streams/readable:312:12)
+
+npm manifest: 
+  No manifest
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
