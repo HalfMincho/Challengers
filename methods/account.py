@@ -19,7 +19,7 @@ def get_uuid(email=None) -> Union[uuid.UUID, None]:
     sql = MySQL()
 
     if email is not None:
-        ret = sql.query('SELECT uuid FROM account WHERE email LIKE %s', (email, ))
+        ret = sql.query('SELECT uuid FROM account WHERE email LIKE %s', (email,))
         if len(ret) == 1:
             return uuid.UUID(bytes=ret[0][0])
 
@@ -29,7 +29,7 @@ def get_uuid(email=None) -> Union[uuid.UUID, None]:
 def check_duplicate_mail(address: str) -> bool:
     sql = MySQL()
     try:
-        if sql.query('SELECT COUNT(*) FROM account WHERE email LIKE %s', (address, ))[0][0] == 0:
+        if sql.query('SELECT COUNT(*) FROM account WHERE email LIKE %s', (address,))[0][0] == 0:
             return False
         else:
             return True
@@ -45,10 +45,10 @@ def issue_register_token(email: str) -> Union[str, None]:
             return None
         while True:
             token = ''.join(choices("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_~()'!*:@,;", k=8))
-            if sql.query('SELECT COUNT(*) FROM mail_verification WHERE token=%s', (token, ))[0][0] == 0:
+            if sql.query('SELECT COUNT(*) FROM mail_verification WHERE token=%s', (token,))[0][0] == 0:
                 break
 
-        sql.query('INSERT INTO mail_verification (token, email) VALUE (%s, %s)', (token, email, ))
+        sql.query('INSERT INTO mail_verification (token, email) VALUE (%s, %s)', (token, email,))
     except:
         return None
     else:
@@ -60,18 +60,18 @@ def verify_register_token(email: str, token: str) -> bool:
 
     try:
         if sql.query('SELECT COUNT(*) FROM mail_verification WHERE token=%s AND email=%s AND used=0',
-                     (token, email, ))[0][0] != 1:
+                     (token, email,))[0][0] != 1:
             return False
 
-        sql.query('UPDATE mail_verification SET used=1 WHERE token=%s', (token, ))
+        sql.query('UPDATE mail_verification SET used=1 WHERE token=%s', (token,))
     except:
         return False
     else:
         return True
 
 
-
-def register(name: str, email: str, password: str, token: str,) -> Tuple[bool, Union[str, None]]:
+def register(name: str, email: str, password: str, token: str, profile_image: str, profile_image_extension: str, ) -> \
+Tuple[bool, Union[str, None]]:
     sql = MySQL()
     user_uuid = uuid.uuid4()
 
@@ -79,15 +79,14 @@ def register(name: str, email: str, password: str, token: str,) -> Tuple[bool, U
                  (token, email,))[0][0] != 1:
         return False, 'token verification is needed'
 
-
     while True:
-        if sql.query('SELECT COUNT(*) FROM account WHERE uuid=%s', (user_uuid.bytes, ))[0][0] == 0:
+        if sql.query('SELECT COUNT(*) FROM account WHERE uuid=%s', (user_uuid.bytes,))[0][0] == 0:
             break
 
     if not re.fullmatch(r'^([\x21-\x7e]{8,})$', password):
         return False, 'password_policy_mismatch'
 
-    if sql.query('SELECT COUNT(*) FROM account WHERE email LIKE %s', (email, ))[0][0] != 0:
+    if sql.query('SELECT COUNT(*) FROM account WHERE email LIKE %s', (email,))[0][0] != 0:
         return False, 'email_exists'
     elif len(email) > 255:
         return False, 'email_too_long'
@@ -100,10 +99,10 @@ def register(name: str, email: str, password: str, token: str,) -> Tuple[bool, U
     sql.transaction.start()
 
     try:
-        sql.query('INSERT INTO account (uuid, email, password, name)'
-                  'VALUE (%s, %s, %s, %s)',
-                  (user_uuid.bytes, email, password, name))
-        sql.query('DELETE FROM mail_verification WHERE token=%s', (token, ))
+        sql.query('INSERT INTO account (uuid, email, password, name, profile_image, profile_image_extension)'
+                  'VALUE (%s, %s, %s, %s, %s, %s)',
+                  (user_uuid.bytes, email, password, name, profile_image, profile_image_extension))
+        sql.query('DELETE FROM mail_verification WHERE token=%s', (token,))
 
     except:
         sql.transaction.rollback()
@@ -116,7 +115,7 @@ def register(name: str, email: str, password: str, token: str,) -> Tuple[bool, U
 def login(email: str, password: str) -> bool:
     sql = MySQL()
 
-    pw_hash = sql.query('SELECT password FROM account WHERE email LIKE %s', (email, ))
+    pw_hash = sql.query('SELECT password FROM account WHERE email LIKE %s', (email,))
     if len(pw_hash) != 1:
         return False
 
@@ -127,7 +126,7 @@ def get_user_data(user_uuid: uuid.UUID) -> Union[dict, None]:
     sql = MySQL(dict_cursor=True)
 
     data = sql.query('SELECT uuid, email, username, name, last_login FROM account WHERE uuid=%s',
-                     (user_uuid.bytes, ))
+                     (user_uuid.bytes,))
 
     if len(data) != 1:
         return None
@@ -141,7 +140,7 @@ def get_user_data(user_uuid: uuid.UUID) -> Union[dict, None]:
 def change_password(user_uuid: uuid.UUID, old_password: str, new_password: str) -> Tuple[bool, Union[str, None]]:
     sql = MySQL()
 
-    old_pw_hash = sql.query('SELECT password FROM account WHERE uuid=%s', (user_uuid.bytes, ))
+    old_pw_hash = sql.query('SELECT password FROM account WHERE uuid=%s', (user_uuid.bytes,))
     if len(old_pw_hash) != 1:
         return False, 'user_does_not_exists'
     elif not pbkdf2_sha512.verify(old_password, old_pw_hash[0][0]):
@@ -150,19 +149,19 @@ def change_password(user_uuid: uuid.UUID, old_password: str, new_password: str) 
     if not re.fullmatch(r'^([\x21-\x7e]{8,})$', new_password):
         return False, 'password_policy_mismatch'
 
-    if sql.query('SELECT COUNT(*) FROM account WHERE uuid=%s', (user_uuid.bytes, ))[0][0] != 1:
+    if sql.query('SELECT COUNT(*) FROM account WHERE uuid=%s', (user_uuid.bytes,))[0][0] != 1:
         return False, 'user_does_not_exists'
 
     new_password = pbkdf2_sha512.hash(new_password, rounds=pbkdf2_hash_rounds, salt_size=pbkdf2_hash_salt_size)
 
     sql.transaction.start()
     try:
-        sql.query('UPDATE account SET password=%s WHERE uuid=%s', (new_password, user_uuid.bytes, ))
+        sql.query('UPDATE account SET password=%s WHERE uuid=%s', (new_password, user_uuid.bytes,))
     except:
         sql.transaction.rollback()
         return False, 'exception_occurred'
 
-    if not mailer.send_one(sql.query('SELECT email FROM account WHERE uuid=%s', (user_uuid.bytes, ))[0][0],
+    if not mailer.send_one(sql.query('SELECT email FROM account WHERE uuid=%s', (user_uuid.bytes,))[0][0],
                            'GISTORY user', 'GISTORY: 비밀번호 변경 알림', password_change_mail_body):
         return False, 'sending_mail_failed'
     else:
@@ -176,7 +175,7 @@ def find_id(name: str, email: str) -> Tuple[bool, Union[str, None]]:
 
     sql = MySQL(dict_cursor=True)
     try:
-        res = sql.query('SELECT id FROM account WHERE name=%s AND email=%s', (name, email, ))
+        res = sql.query('SELECT id FROM account WHERE name=%s AND email=%s', (name, email,))
         if len(res) == 1:
             id = res[0]['id']
         else:
@@ -198,7 +197,7 @@ def reset_password(name: str, email: str, id: str) -> Tuple[bool, Union[str, Non
     sql = MySQL()
     try:
         res = sql.query('SELECT uuid FROM account WHERE name=%s AND email=%s AND id=%s',
-                        (name, email, id, ))
+                        (name, email, id,))
         if len(res) == 1:
             user_uuid = uuid.UUID(bytes=res[0][0])
         else:
