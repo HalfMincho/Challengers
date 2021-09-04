@@ -39,7 +39,8 @@ def verify_register_token(data):
 
 @account_blueprint.route('/register', methods=['POST', 'OPTIONS'])
 @cors_allow(frontend_address)
-@is_api(required_keys=['name', 'email', 'token', 'password'], input_type='json')
+@is_api(required_keys=['name', 'email', 'token', 'password'],
+        acceptable_keys=['profile_image', 'profile_image_extension'], input_type='json')
 def register(data):
 
     state, error_code = account.register(**data)
