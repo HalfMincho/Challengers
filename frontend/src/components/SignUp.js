@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import { Box, Container, Grid, Stack, TextField } from '@mui/material';
 
@@ -96,12 +96,32 @@ import { Box, Container, Grid, Stack, TextField } from '@mui/material';
 // }
 // `;
 
+const CssTextField = styled(TextField)({
+  '& label.Mui-focused': {
+    color: '#F06694',
+  },
+  '& .MuiInput-underline:after': {
+    borderBottomColor: '#F06694',
+  },
+  '& .MuiOutlinedInput-root': {
+    // '& fieldset': {
+    //   borderColor: 'red',
+    // },
+    // '&:hover fieldset': {
+    //   borderColor: 'yellow',
+    // },
+    '&.Mui-focused fieldset': {
+      borderColor: '#F06694',
+    },
+  },
+});
+
 function SignUp() {
   return (
     <Box
       component="form"
       sx={{
-        '& .MuiTextField-root': { m: 1 },
+        '& .MuiCssCssTextField-root': { m: 1 },
         // bgcolor: '#cfe8fc',
         height: '100vh',
         mx: 20,
@@ -113,27 +133,65 @@ function SignUp() {
       <Container maxWidth="xs">
         <Grid container direction="column" justifyContent="center">
           <Grid item xs={12}>
-            <Stack direction="column" justifyContent="center" alignItems="center" spacing={0}>
+            <Box
+              sx={{
+                fontWeight: 600,
+                fontSize: 'h6.fontSize',
+                letterSpacing: -1,
+                color: '#343a40',
+                mb: 3,
+              }}
+            >
+              회원가입
+            </Box>
+            <Stack direction="column" justifyContent="center" alignItems="center" spacing={3}>
               <Box sx={{ width: '100%' }}>
-                <TextField
+                <CssTextField
                   fullWidth
                   required
                   id="standard-required"
                   label="이름"
-                  // type="search"
                   autoComplete="current-password"
-                  // variant="standard"
+                  color="secondary"
                 />
               </Box>
               <Box sx={{ width: '100%' }}>
-                <TextField
+                <CssTextField
                   fullWidth
                   required
                   id="standard-required"
                   label="비밀번호"
                   type="password"
                   autoComplete="current-password"
-                  // variant="standard"
+                />
+              </Box>
+              <Box sx={{ width: '100%' }}>
+                <CssTextField
+                  fullWidth
+                  required
+                  id="standard-required"
+                  label="비밀번호 확인"
+                  type="password"
+                  autoComplete="current-password"
+                />
+              </Box>
+              <Box sx={{ width: '100%' }}>
+                <CssTextField
+                  fullWidth
+                  required
+                  id="standard-required"
+                  label="닉네임"
+                  autoComplete="current-password"
+                />
+              </Box>
+              <Box sx={{ width: '100%' }}>
+                <CssTextField
+                  fullWidth
+                  required
+                  id="standard-required"
+                  label="이메일 인증"
+                  type="password"
+                  autoComplete="current-password"
                 />
               </Box>
             </Stack>
