@@ -1,8 +1,6 @@
-import React from 'react';
 import styled from 'styled-components';
-import { HiOutlineSearch } from "react-icons/hi";
 
-const HeaderBlock = styled.div`
+export const HeaderBlock = styled.div`
   nav {
     margin: 0;
     display: flex;
@@ -65,42 +63,9 @@ const HeaderBlock = styled.div`
   }
 `;
 
-const HeaderSearchIcon = styled.div`
+export const HeaderSearchIcon = styled.div`
   box-sizing: border-box;
   padding: 10px 18px 10px;
   font-size: 20px;
   cursor: pointer;
 `;
-
-
-function Header() {
-  return (
-    <>
-      <HeaderBlock>
-        <nav>
-          <div className="navbar__left-side">
-            <div className="navbar__logo">
-              <a href="">
-                <img className="navbar__logo_img" src="/mainLogo.png"/>
-              </a>
-            </div>
-            <div className="navbar__search">
-              <input type="search" placeholder="어떤 습관을 가지고 싶으신가요?" />
-              <HeaderSearchIcon><HiOutlineSearch /></HeaderSearchIcon>
-            </div>
-          </div>
-          <div className="navbar__right-side">
-            <button className="navbar__right-side_make-challenge">
-              <span>챌린지 개설하기</span>
-            </button>
-            <button className="navbar__right-side_login">
-              <span>로그인</span>
-            </button>
-          </div>
-        </nav>
-      </HeaderBlock>
-    </>
-  )
-}
-
-export default Header;
