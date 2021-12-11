@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/styled": "^11.6.0",
     "@mui/material": "^5.2.3",
     "@mui/styled-engine-sc": "^5.1.0",
     "@storybook/cli": "^6.3.2",
