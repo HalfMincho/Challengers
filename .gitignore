@@ -12,3 +12,5 @@ __pycache__/
 /templates
 
 !/templates/move_static.sh
+
+frontend/node_modules
