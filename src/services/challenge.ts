@@ -27,6 +27,26 @@ export const GetPopularChallenge = async () => {
   return rows;
 };
 
+export const GetRecentChallenge = async () => {
+  const connection = await Connection();
+
+  const [rows] = (await connection.execute(
+    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description, reg_date, views 
+    FROM challenge ORDER BY reg_date desc LIMIT 0, 10`,
+  )) as [rows: Challenge[], field: unknown];
+
+  rows.forEach((challenge: Challenge) => {
+    challenge["submitter"] = uuidStringify(
+      challenge["submitter"] as unknown as Buffer,
+    );
+    challenge["category"] = uuidStringify(
+      challenge["category"] as unknown as Buffer,
+    );
+  });
+
+  return rows;
+};
+
 export const PostChallenge = async (req: express.Request) => {
   const connection = await Connection();
   const { body }: { body: ChallengeFromRequest } = req;

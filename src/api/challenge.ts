@@ -1,6 +1,10 @@
 import express from "express";
 
-import { GetPopularChallenge, PostChallenge } from "../services/challenge";
+import {
+  GetPopularChallenge,
+  GetRecentChallenge,
+  PostChallenge,
+} from "../services/challenge";
 
 const challengeRouter = express.Router();
 
@@ -8,6 +12,14 @@ challengeRouter.get(
   "/popular",
   async (req: express.Request, res: express.Response) => {
     const result = await GetPopularChallenge();
+    res.send(result);
+  },
+);
+
+challengeRouter.get(
+  "/recent",
+  async (req: express.Request, res: express.Response) => {
+    const result = await GetRecentChallenge();
     res.send(result);
   },
 );
