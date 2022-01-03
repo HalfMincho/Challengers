@@ -1,6 +1,7 @@
 import express from "express";
 
 import {
+  GetChallenge,
   GetPopularChallenge,
   GetRecentChallenge,
   PostChallenge,
@@ -11,7 +12,8 @@ const challengeRouter = express.Router();
 challengeRouter.get(
   "/popular",
   async (req: express.Request, res: express.Response) => {
-    const result = await GetPopularChallenge();
+    const { status, result } = await GetPopularChallenge();
+    res.status(status);
     res.send(result);
   },
 );
@@ -19,7 +21,17 @@ challengeRouter.get(
 challengeRouter.get(
   "/recent",
   async (req: express.Request, res: express.Response) => {
-    const result = await GetRecentChallenge();
+    const { status, result } = await GetRecentChallenge();
+    res.status(status);
+    res.send(result);
+  },
+);
+
+challengeRouter.get(
+  "/:id",
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await GetChallenge(Number(req.params.id));
+    res.status(status);
     res.send(result);
   },
 );

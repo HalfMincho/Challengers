@@ -7,6 +7,48 @@ import { Validate } from "./middlewares/validation";
 import { Challenge, ChallengeFromRequest } from "./../types/challenge";
 import { ChallengeSchema } from "../schema/challenge";
 
+export const GetChallenge = async (id: number) => {
+  const connection = await Connection();
+
+  if (isNaN(id)) {
+    return { status: 400, result: { error: "invalid_id" } };
+  }
+
+  const [row] =
+    (await connection.execute(`SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+  start_at, end_at, cost, description, reg_date, views FROM challenge WHERE id=${id}`)) as [
+      row: Challenge[],
+      field: unknown,
+    ];
+
+  row.forEach((challenge: Challenge) => {
+    challenge["submitter"] = uuidStringify(
+      challenge["submitter"] as unknown as Buffer,
+    );
+    challenge["category"] = uuidStringify(
+      challenge["category"] as unknown as Buffer,
+    );
+  });
+
+  try {
+    await connection.beginTransaction();
+    await connection.execute(
+      `UPDATE challenge SET views = views + 1 WHERE id=${id}`,
+    );
+    await connection.commit();
+
+    row[0]["views"] += 1;
+  } catch (e) {
+    await connection.rollback();
+
+    console.error(e);
+
+    return { status: 500, result: { error: "exception_occurred" } };
+  }
+
+  return { status: 200, result: row[0] };
+};
+
 export const GetPopularChallenge = async () => {
   const connection = await Connection();
 
@@ -24,7 +66,7 @@ export const GetPopularChallenge = async () => {
     );
   });
 
-  return rows;
+  return { status: 200, result: rows };
 };
 
 export const GetRecentChallenge = async () => {
@@ -44,7 +86,7 @@ export const GetRecentChallenge = async () => {
     );
   });
 
-  return rows;
+  return { status: 200, result: rows };
 };
 
 export const PostChallenge = async (req: express.Request) => {
