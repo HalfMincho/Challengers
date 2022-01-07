@@ -5,6 +5,7 @@ import {
   GetPopularChallenge,
   GetRecentChallenge,
   PostChallenge,
+  PutChallenge,
   DeleteChallenge,
 } from "../services/challenge";
 
@@ -41,6 +42,15 @@ challengeRouter.post(
   "/",
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await PostChallenge(req);
+    res.status(status);
+    res.send(result);
+  },
+);
+
+challengeRouter.put(
+  "/:id",
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await PutChallenge(Number(req.params.id), req);
     res.status(status);
     res.send(result);
   },
