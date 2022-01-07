@@ -32,15 +32,15 @@ const ChallengeCardBlock = styled.div`
   }
 `;
 
-const ChallengeCard = () => {
+const ChallengeCard = ({ name, start_at, auth_count_in_day, auth_day }) => {
   return (
     <ChallengeCardBlock>
       <div className="cardImage"></div>
-      <p className="cardTitle">아침 공복에 물 한 잔</p>
-      <p className="cardStartDay">모레부터 시작</p>
+      <p className="cardTitle">{name}</p>
+      <p className="cardStartDay">{start_at}부터 시작</p>
       <div className="cardTag">
-        <span>매일</span>
-        <span>2주 동안</span>
+        <span>{auth_count_in_day}일</span>
+        <span>{auth_day}일 동안</span>
       </div>
     </ChallengeCardBlock>
   );
