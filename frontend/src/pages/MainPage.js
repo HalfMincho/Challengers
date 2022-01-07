@@ -1,11 +1,9 @@
-import React from "react";
-import "../styles/MainPage.scss";
-
+import React from 'react';
+import MainBanner from '../components/MainBanner';
+import '../styles/MainPage.scss';
 
 const MainPage = () => {
-  return (
-    <div>This is mainPage</div>
-  );
+  return <MainBanner />;
 };
 
 export default MainPage;
