@@ -152,3 +152,35 @@ export const PostChallenge = async (req: express.Request) => {
     return { status: 500, result: { error: "exception_occurred" } };
   }
 };
+
+export const DeleteChallenge = async (id: number) => {
+  const connection = await Connection();
+
+  if (isNaN(id)) {
+    return { status: 400, result: { error: "invalid_id" } };
+  }
+
+  const result = (await connection.execute(
+    `SELECT id FROM challenge WHERE id=${id}`,
+  )) as [result: Array<Object>, field: unknown];
+
+  if (result[0].length < 1) {
+    return { status: 400, result: { error: "challenge_no_exists" } };
+  }
+
+  try {
+    await connection.beginTransaction();
+
+    await connection.execute(`DELETE FROM challenge WHERE id=${id}`);
+
+    await connection.commit();
+
+    return { status: 200, result: { deleted: id } };
+  } catch (e) {
+    await connection.rollback();
+
+    console.error(e);
+
+    return { status: 500, result: { error: "exception_occurred" } };
+  }
+};

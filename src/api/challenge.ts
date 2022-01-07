@@ -5,6 +5,7 @@ import {
   GetPopularChallenge,
   GetRecentChallenge,
   PostChallenge,
+  DeleteChallenge,
 } from "../services/challenge";
 
 const challengeRouter = express.Router();
@@ -40,6 +41,15 @@ challengeRouter.post(
   "/",
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await PostChallenge(req);
+    res.status(status);
+    res.send(result);
+  },
+);
+
+challengeRouter.delete(
+  "/:id",
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await DeleteChallenge(Number(req.params.id));
     res.status(status);
     res.send(result);
   },
