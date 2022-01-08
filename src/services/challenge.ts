@@ -52,6 +52,8 @@ export const GetChallenge = async (id: number) => {
     console.error(e);
 
     return { status: 500, result: { error: "exception_occurred" } };
+  } finally {
+    await connection.end();
   }
 
   return { status: 200, result: row[0] };
@@ -74,6 +76,8 @@ export const GetPopularChallenge = async () => {
     );
   });
 
+  await connection.end();
+
   return { status: 200, result: rows };
 };
 
@@ -93,6 +97,8 @@ export const GetRecentChallenge = async () => {
       challenge["category"] as unknown as Buffer,
     );
   });
+
+  await connection.end();
 
   return { status: 200, result: rows };
 };
@@ -158,6 +164,8 @@ export const PostChallenge = async (req: express.Request) => {
     console.error(e);
 
     return { status: 500, result: { error: "exception_occurred" } };
+  } finally {
+    await connection.end();
   }
 };
 
@@ -231,6 +239,8 @@ export const PutChallenge = async (id: number, req: express.Request) => {
     console.error(e);
 
     return { status: 500, result: { error: "exception_occurred" } };
+  } finally {
+    await connection.end();
   }
 };
 
@@ -263,5 +273,7 @@ export const DeleteChallenge = async (id: number) => {
     console.error(e);
 
     return { status: 500, result: { error: "exception_occurred" } };
+  } finally {
+    await connection.end();
   }
 };
