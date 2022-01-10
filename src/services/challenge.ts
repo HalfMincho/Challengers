@@ -4,7 +4,12 @@ import { stringify as uuidStringify, v4 as uuidv4 } from "uuid";
 
 import { Validate } from "./middlewares/validation";
 
-import { Challenge, ChallengeFromRequest } from "./../types/challenge";
+import {
+  CategoryFromDB,
+  Challenge,
+  ChallengeFromDB,
+  ChallengeFromRequest,
+} from "./../types/challenge";
 import { ChallengeSchema } from "../schema/challenge";
 
 export const GetChallenge = async (id: number) => {
@@ -25,18 +30,25 @@ export const GetChallenge = async (id: number) => {
   const [row] =
     (await connection.execute(`SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
   start_at, end_at, cost, description, reg_date, views FROM challenge WHERE id=${id}`)) as [
-      row: Challenge[],
+      row: ChallengeFromDB[],
       field: unknown,
     ];
 
-  row.forEach((challenge: Challenge) => {
-    challenge["submitter"] = uuidStringify(
-      challenge["submitter"] as unknown as Buffer,
-    );
-    challenge["category"] = uuidStringify(
-      challenge["category"] as unknown as Buffer,
-    );
-  });
+  const refinedRow = await Promise.all(
+    row.map(async (challenge: ChallengeFromDB) => {
+      const [category] = (await connection.execute(
+        `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
+          challenge.category,
+        ).replace(/-/gi, "")}")`,
+      )) as Array<Array<CategoryFromDB>>;
+
+      return {
+        ...challenge,
+        category: category[0].name,
+        submitter: uuidStringify(challenge["submitter"]),
+      };
+    }),
+  );
 
   try {
     await connection.beginTransaction();
@@ -56,7 +68,7 @@ export const GetChallenge = async (id: number) => {
     await connection.end();
   }
 
-  return { status: 200, result: row[0] };
+  return { status: 200, result: refinedRow[0] };
 };
 
 export const GetPopularChallenge = async (count: number) => {
@@ -69,20 +81,27 @@ export const GetPopularChallenge = async (count: number) => {
   const [rows] = (await connection.execute(
     `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description, reg_date, views 
     FROM challenge ORDER BY views desc LIMIT 0, ${count}`,
-  )) as [rows: Challenge[], field: unknown];
+  )) as [rows: ChallengeFromDB[], field: unknown];
 
-  rows.forEach((challenge: Challenge) => {
-    challenge["submitter"] = uuidStringify(
-      challenge["submitter"] as unknown as Buffer,
-    );
-    challenge["category"] = uuidStringify(
-      challenge["category"] as unknown as Buffer,
-    );
-  });
+  const refinedRows = await Promise.all(
+    rows.map(async (challenge: ChallengeFromDB) => {
+      const [category] = (await connection.execute(
+        `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
+          challenge.category,
+        ).replace(/-/gi, "")}")`,
+      )) as Array<Array<CategoryFromDB>>;
+
+      return {
+        ...challenge,
+        category: category[0].name,
+        submitter: uuidStringify(challenge["submitter"]),
+      };
+    }),
+  );
 
   await connection.end();
 
-  return { status: 200, result: rows };
+  return { status: 200, result: refinedRows };
 };
 
 export const GetRecentChallenge = async (count: number) => {
@@ -95,20 +114,27 @@ export const GetRecentChallenge = async (count: number) => {
   const [rows] = (await connection.execute(
     `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description, reg_date, views 
     FROM challenge ORDER BY reg_date desc LIMIT 0, ${count}`,
-  )) as [rows: Challenge[], field: unknown];
+  )) as [rows: ChallengeFromDB[], field: unknown];
 
-  rows.forEach((challenge: Challenge) => {
-    challenge["submitter"] = uuidStringify(
-      challenge["submitter"] as unknown as Buffer,
-    );
-    challenge["category"] = uuidStringify(
-      challenge["category"] as unknown as Buffer,
-    );
-  });
+  const refinedRows = await Promise.all(
+    rows.map(async (challenge: ChallengeFromDB) => {
+      const [category] = (await connection.execute(
+        `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
+          challenge.category,
+        ).replace(/-/gi, "")}")`,
+      )) as Array<Array<CategoryFromDB>>;
+
+      return {
+        ...challenge,
+        category: category[0].name,
+        submitter: uuidStringify(challenge["submitter"]),
+      };
+    }),
+  );
 
   await connection.end();
 
-  return { status: 200, result: rows };
+  return { status: 200, result: refinedRows };
 };
 
 export const PostChallenge = async (req: express.Request) => {
