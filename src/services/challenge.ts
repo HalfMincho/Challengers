@@ -5,11 +5,13 @@ import { stringify as uuidStringify, v4 as uuidv4 } from "uuid";
 import { Validate } from "./middlewares/validation";
 
 import {
+  Category,
   CategoryFromDB,
   Challenge,
   ChallengeFromDB,
   ChallengeFromRequest,
 } from "./../types/challenge";
+import { category } from "../types/consts";
 import { ChallengeSchema } from "../schema/challenge";
 
 export const GetChallenge = async (id: number) => {
@@ -159,6 +161,12 @@ export const PostChallenge = async (req: express.Request) => {
     return { status: 400, result: { error: "no_required_args" } };
   }
 
+  const isCategory = (x: Category) => category.includes(x);
+
+  if (!isCategory(body.category)) {
+    return { status: 400, result: { error: "no_required_args" } };
+  }
+
   const categoryUUID = (await connection.execute(
     `SELECT uuid FROM category WHERE name="${body.category}"`,
   )) as [categoryUUID: any[], field: unknown];
@@ -227,10 +235,6 @@ export const PutChallenge = async (id: number, req: express.Request) => {
 
   const { body }: { body: ChallengeFromRequest } = req;
 
-  const buffer = Buffer.alloc(16);
-  uuidv4({}, buffer);
-  const test_uuid = buffer;
-
   if (body.start_at !== undefined && body.end_at !== undefined) {
     const dateRegex =
       /[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]/;
@@ -242,6 +246,12 @@ export const PutChallenge = async (id: number, req: express.Request) => {
   let reqBodyValidation = await Validate(body, ChallengeSchema);
 
   if (!reqBodyValidation) {
+    return { status: 400, result: { error: "no_required_args" } };
+  }
+
+  const isCategory = (x: Category) => category.includes(x);
+
+  if (!isCategory(body.category)) {
     return { status: 400, result: { error: "no_required_args" } };
   }
 

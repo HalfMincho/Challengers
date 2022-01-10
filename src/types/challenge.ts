@@ -1,3 +1,5 @@
+import { category } from "./consts";
+
 export type Challenge = {
   id: number;
   submitter: string;
@@ -46,13 +48,6 @@ export type ChallengeFromDB = {
   views: number;
 };
 
-export type Category =
-  | "건강"
-  | "정서"
-  | "생활"
-  | "역량"
-  | "자산"
-  | "취미"
-  | "그 외";
+export type Category = typeof category[number];
 
 export type CategoryFromDB = { name: Category };
