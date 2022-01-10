@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 const ChallengeCardBlock = styled.div`
+  margin-bottom: 30px;
+
   * {
     margin-bottom: 5px;
   }
@@ -10,6 +12,7 @@ const ChallengeCardBlock = styled.div`
     height: 200px;
     width: 250px;
     border: 1px solid grey;
+    margin-bottom: 10px;
   }
 
   .cardTitle {

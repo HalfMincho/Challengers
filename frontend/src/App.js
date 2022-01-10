@@ -22,6 +22,10 @@ function App() {
         path="/popular"
         render={() => <ChallengeListPage number={24} title="인기 챌린지" type="popular" />}
       />
+      <Route
+        path="/recent"
+        render={() => <ChallengeListPage number={24} title="신규 챌린지" type="recent" />}
+      />
     </>
   );
 }

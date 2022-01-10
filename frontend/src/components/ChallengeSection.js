@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ChallengeCard from './ChallengeCard';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Section = styled.div`
   margin: 5% 0;
@@ -16,16 +17,20 @@ const Section = styled.div`
       font-size: 1.5em;
       font-weight: 600;
     }
+
+    a {
+      text-decoration: none;
+    }
+    a:link,
+    a:visited {
+      color: black;
+    }
   }
 
   .cardContainer {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-
-    div {
-      margin-bottom: 10px;
-    }
   }
 `;
 
@@ -67,7 +72,11 @@ const ChallengeSection = ({ number, preview, title, type }) => {
       <Section>
         <p className="sectionHeader">
           <span className="sectionTitle">{title}</span>
-          {preview && <span>더보기</span>}
+          {preview && (
+            <span>
+              <Link to={type}>더보기</Link>
+            </span>
+          )}
         </p>
         <div className="cardContainer">{showChallengeCards(data)}</div>
       </Section>
