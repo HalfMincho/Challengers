@@ -13,8 +13,8 @@ const MainPage = () => {
   return (
     <MainPageContainer>
       <MainBanner />
-      <ChallengeSection number="4" title="인기 챌린지" />
-      <ChallengeSection number="4" title="신규 챌린지" />
+      <ChallengeSection number={4} title="인기 챌린지" type="popular" />
+      <ChallengeSection number={4} title="신규 챌린지" type="recent" />
     </MainPageContainer>
   );
 };

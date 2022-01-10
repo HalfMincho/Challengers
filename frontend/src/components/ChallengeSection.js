@@ -1,8 +1,7 @@
-import React from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ChallengeCard from './ChallengeCard';
-import challengeInfo from './temp.json';
+import axios from 'axios';
 
 const Section = styled.div`
   margin: 5% 0;
@@ -22,29 +21,47 @@ const Section = styled.div`
   .cardContainer {
     display: flex;
     justify-content: space-between;
-    flex: none;
+    flex-wrap: wrap;
+
+    div {
+      margin-bottom: 10px;
+    }
   }
 `;
 
-const showChallengeCards = () => {
-  // TODO: GET API 호출 -> number개의 챌린지 정보 challengeInfo에 저장
-  getData();
-  const arrayData = challengeInfo.map((item, index) => {
-    return (
-      <ChallengeCard
-        auth_count_in_day={item.auth_count_in_day}
-        auth_day={item.auth_day}
-        key={index}
-        name={item.name}
-        start_at={item.start_at}
-      />
-    );
-  });
+const showChallengeCards = (data) => {
+  if (data) {
+    const arrayData = data.map((item, index) => {
+      return (
+        <ChallengeCard
+          auth_count_in_day={item.auth_count_in_day}
+          auth_day={item.auth_day}
+          key={index}
+          name={item.name}
+          start_at={item.start_at}
+        />
+      );
+    });
 
-  return arrayData;
+    return arrayData;
+  }
 };
 
-const ChallengeSection = ({ number, title }) => {
+const ChallengeSection = ({ number, title, type }) => {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await axios.get(`/challenge/${type}`).then((res) => setData(res.data.slice(0, number)));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <>
       <Section>
@@ -52,7 +69,7 @@ const ChallengeSection = ({ number, title }) => {
           <span className="sectionTitle">{title}</span>
           <span>더보기</span>
         </p>
-        <div className="cardContainer">{showChallengeCards(number)}</div>
+        <div className="cardContainer">{showChallengeCards(data)}</div>
       </Section>
     </>
   );
