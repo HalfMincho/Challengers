@@ -85,12 +85,16 @@ export const GetPopularChallenge = async (count: number) => {
   return { status: 200, result: rows };
 };
 
-export const GetRecentChallenge = async () => {
+export const GetRecentChallenge = async (count: number) => {
   const connection = await Connection();
+
+  if (isNaN(count)) {
+    count = 10;
+  }
 
   const [rows] = (await connection.execute(
     `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description, reg_date, views 
-    FROM challenge ORDER BY reg_date desc LIMIT 0, 10`,
+    FROM challenge ORDER BY reg_date desc LIMIT 0, ${count}`,
   )) as [rows: Challenge[], field: unknown];
 
   rows.forEach((challenge: Challenge) => {

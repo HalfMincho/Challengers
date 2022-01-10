@@ -25,7 +25,9 @@ challengeRouter.get(
 challengeRouter.get(
   "/recent",
   async (req: express.Request, res: express.Response) => {
-    const { status, result } = await GetRecentChallenge();
+    const { status, result } = await GetRecentChallenge(
+      Number(req.query.count),
+    );
     res.status(status);
     res.send(result);
   },
