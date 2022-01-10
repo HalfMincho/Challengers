@@ -53,7 +53,7 @@ const ChallengeSection = ({ number, title, type }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await axios.get(`/challenge/${type}`).then((res) => setData(res.data.slice(0, number)));
+        await axios.get(`/challenge/${type}?count=${number}`).then((res) => setData(res.data));
       } catch (e) {
         console.log(e);
       }
