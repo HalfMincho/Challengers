@@ -14,7 +14,9 @@ const challengeRouter = express.Router();
 challengeRouter.get(
   "/popular",
   async (req: express.Request, res: express.Response) => {
-    const { status, result } = await GetPopularChallenge();
+    const { status, result } = await GetPopularChallenge(
+      Number(req.query.count),
+    );
     res.status(status);
     res.send(result);
   },
@@ -23,7 +25,9 @@ challengeRouter.get(
 challengeRouter.get(
   "/recent",
   async (req: express.Request, res: express.Response) => {
-    const { status, result } = await GetRecentChallenge();
+    const { status, result } = await GetRecentChallenge(
+      Number(req.query.count),
+    );
     res.status(status);
     res.send(result);
   },
