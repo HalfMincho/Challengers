@@ -117,7 +117,7 @@ export const PostChallenge = async (req: express.Request) => {
 
   const buffer = Buffer.alloc(16);
   uuidv4({}, buffer);
-  const test_uuid = buffer;
+  const challengeUUID = buffer;
 
   if (body.start_at !== undefined && body.end_at !== undefined) {
     const dateRegex =
@@ -133,10 +133,14 @@ export const PostChallenge = async (req: express.Request) => {
     return { status: 400, result: { error: "no_required_args" } };
   }
 
+  const categoryUUID = (await connection.execute(
+    `SELECT uuid FROM category WHERE name="${body.category}"`,
+  )) as [categoryUUID: any[], field: unknown];
+
   const params = [
-    test_uuid,
-    test_uuid,
-    test_uuid,
+    challengeUUID,
+    challengeUUID,
+    categoryUUID[0][0].uuid,
     body.name,
     body.auth_way,
     body.auth_day,
