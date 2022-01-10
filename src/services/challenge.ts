@@ -11,6 +11,7 @@ import {
   ChallengeFromDB,
   ChallengeFromRequest,
 } from "./../types/challenge";
+import { category } from "../types/consts";
 import { ChallengeSchema } from "../schema/challenge";
 
 export const GetChallenge = async (id: number) => {
@@ -160,9 +161,7 @@ export const PostChallenge = async (req: express.Request) => {
     return { status: 400, result: { error: "no_required_args" } };
   }
 
-  const category = ["건강", "정서", "생활", "역량", "자산", "취미", "그 외"];
-
-  const isCategory = (x: string): x is Category => category.includes(x);
+  const isCategory = (x: Category) => category.includes(x);
 
   if (!isCategory(body.category)) {
     return { status: 400, result: { error: "no_required_args" } };
@@ -247,6 +246,12 @@ export const PutChallenge = async (id: number, req: express.Request) => {
   let reqBodyValidation = await Validate(body, ChallengeSchema);
 
   if (!reqBodyValidation) {
+    return { status: 400, result: { error: "no_required_args" } };
+  }
+
+  const isCategory = (x: Category) => category.includes(x);
+
+  if (!isCategory(body.category)) {
     return { status: 400, result: { error: "no_required_args" } };
   }
 
