@@ -242,8 +242,12 @@ export const PutChallenge = async (id: number, req: express.Request) => {
     return { status: 400, result: { error: "no_required_args" } };
   }
 
+  const categoryUUID = (await connection.execute(
+    `SELECT uuid FROM category WHERE name="${body.category}"`,
+  )) as [categoryUUID: any[], field: unknown];
+
   const params = [
-    test_uuid,
+    categoryUUID[0][0].uuid,
     body.name,
     body.auth_way,
     body.auth_day,
