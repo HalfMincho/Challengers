@@ -5,6 +5,7 @@ import { stringify as uuidStringify, v4 as uuidv4 } from "uuid";
 import { Validate } from "./middlewares/validation";
 
 import {
+  Category,
   CategoryFromDB,
   Challenge,
   ChallengeFromDB,
@@ -159,6 +160,14 @@ export const PostChallenge = async (req: express.Request) => {
     return { status: 400, result: { error: "no_required_args" } };
   }
 
+  const category = ["건강", "정서", "생활", "역량", "자산", "취미", "그 외"];
+
+  const isCategory = (x: string): x is Category => category.includes(x);
+
+  if (!isCategory(body.category)) {
+    return { status: 400, result: { error: "no_required_args" } };
+  }
+
   const categoryUUID = (await connection.execute(
     `SELECT uuid FROM category WHERE name="${body.category}"`,
   )) as [categoryUUID: any[], field: unknown];
@@ -226,10 +235,6 @@ export const PutChallenge = async (id: number, req: express.Request) => {
   }
 
   const { body }: { body: ChallengeFromRequest } = req;
-
-  const buffer = Buffer.alloc(16);
-  uuidv4({}, buffer);
-  const test_uuid = buffer;
 
   if (body.start_at !== undefined && body.end_at !== undefined) {
     const dateRegex =
