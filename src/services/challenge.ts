@@ -11,7 +11,7 @@ import {
   ChallengeFromDB,
   ChallengeFromRequest,
 } from "./../types/challenge";
-import { category } from "../types/consts";
+import { category } from "../types/const";
 import { ChallengeSchema } from "../schema/challenge";
 
 export const GetChallenge = async (id: number) => {

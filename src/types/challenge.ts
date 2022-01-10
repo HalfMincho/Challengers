@@ -1,4 +1,4 @@
-import { category } from "./consts";
+import { category } from "./const";
 
 export type Challenge = {
   id: number;
