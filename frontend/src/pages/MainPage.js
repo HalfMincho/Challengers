@@ -1,52 +1,21 @@
-import React from "react";
-import Header from "../Header";
-import Footer from "../Footer";
-import "../styles/MainPage.scss";
-import LoadingPage from "../pages/LoadingPage";
-import { loadComponent } from "../lib/utils";
+import React from 'react';
+import styled from 'styled-components';
+import ChallengeSection from '../components/ChallengeSection';
+import MainBanner from '../components/MainBanner';
+import '../styles/MainPage.scss';
 
-const MainPageBody = ({
-  errorGetExampleData,
-  errorPostExampleData,
-  exampleData,
-  loadingGetExampleData,
-  loadingPostExampleData,
-  postExampleData
-}) => {
-  return (
-    <>
-      <div className="main-page-body-wrapper">
-        {loadComponent(
-          loadingGetExampleData,
-          <LoadingPage />,
-          <div />
-        )}
-      </div>
-    </>
-  );
-};
+const MainPageContainer = styled.div`
+  width: 75%;
+  margin: 0 auto;
+`;
 
-const MainPage = ({
-  errorGetExampleData,
-  errorPostExampleData,
-  exampleData,
-  loadingGetExampleData,
-  loadingPostExampleData,
-  postExampleData
-}) => {
+const MainPage = () => {
   return (
-    <div className="main-page-wrapper">
-      <Header />
-      <MainPageBody
-        errorGetExampleData={errorGetExampleData}
-        errorPostExampleData={errorPostExampleData}
-        exampleData={exampleData}
-        loadingGetExampleData={loadingGetExampleData}
-        loadingPostExampleData={loadingPostExampleData}
-        postExampleData={postExampleData}
-      />
-      <Footer />
-    </div>
+    <MainPageContainer>
+      <MainBanner />
+      <ChallengeSection number={4} title="인기 챌린지" type="popular" />
+      <ChallengeSection number={4} title="신규 챌린지" type="recent" />
+    </MainPageContainer>
   );
 };
 
