@@ -171,6 +171,8 @@ export const PostChallenge = async (req: express.Request) => {
     body.auth_way,
     body.auth_day,
     body.auth_count_in_day,
+    body.start_at,
+    body.end_at,
     body.cost,
     body.description,
   ];
@@ -179,8 +181,9 @@ export const PostChallenge = async (req: express.Request) => {
     await connection.beginTransaction();
 
     await connection.execute(
-      `INSERT INTO challenge (uuid, submitter, category, name, auth_way, auth_day, auth_count_in_day, cost, description)
-    VALUE (?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO challenge (uuid, submitter, category, name,
+      auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description)
+    VALUE (?,?,?,?,?,?,?,?,?,?,?)`,
       params,
     );
 
@@ -252,6 +255,8 @@ export const PutChallenge = async (id: number, req: express.Request) => {
     body.auth_way,
     body.auth_day,
     body.auth_count_in_day,
+    body.start_at,
+    body.end_at,
     body.cost,
     body.description,
   ];
@@ -260,7 +265,8 @@ export const PutChallenge = async (id: number, req: express.Request) => {
     await connection.beginTransaction();
 
     await connection.execute(
-      `UPDATE challenge SET category=?, name=?, auth_way=?, auth_day=?, auth_count_in_day=?, cost=?, description=? WHERE id=${id}`,
+      `UPDATE challenge SET category=?, name=?, auth_way=?, auth_day=?,
+      auth_count_in_day=?, start_at=?, end_at=?, cost=?, description=? WHERE id=${id}`,
       [
         params[0],
         params[1],
@@ -269,6 +275,8 @@ export const PutChallenge = async (id: number, req: express.Request) => {
         params[4],
         params[5],
         params[6],
+        params[7],
+        params[8],
       ],
     );
 
