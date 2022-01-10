@@ -171,6 +171,8 @@ export const PostChallenge = async (req: express.Request) => {
     body.auth_way,
     body.auth_day,
     body.auth_count_in_day,
+    body.start_at,
+    body.end_at,
     body.cost,
     body.description,
   ];
@@ -179,8 +181,9 @@ export const PostChallenge = async (req: express.Request) => {
     await connection.beginTransaction();
 
     await connection.execute(
-      `INSERT INTO challenge (uuid, submitter, category, name, auth_way, auth_day, auth_count_in_day, cost, description)
-    VALUE (?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO challenge (uuid, submitter, category, name,
+      auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description)
+    VALUE (?,?,?,?,?,?,?,?,?,?,?)`,
       params,
     );
 
