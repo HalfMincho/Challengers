@@ -47,7 +47,7 @@ const showChallengeCards = (data) => {
   }
 };
 
-const ChallengeSection = ({ number, title, type }) => {
+const ChallengeSection = ({ number, preview, title, type }) => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ const ChallengeSection = ({ number, title, type }) => {
       <Section>
         <p className="sectionHeader">
           <span className="sectionTitle">{title}</span>
-          <span>더보기</span>
+          {preview && <span>더보기</span>}
         </p>
         <div className="cardContainer">{showChallengeCards(data)}</div>
       </Section>
