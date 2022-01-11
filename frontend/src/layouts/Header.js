@@ -14,7 +14,7 @@ function Header() {
               </a>
             </div>
             <div className="navbar__search">
-              <input type="search" placeholder="어떤 습관을 가지고 싶으신가요?" />
+              <input placeholder="어떤 습관을 가지고 싶으신가요?" type="search" />
               <HeaderSearchIcon>
                 <HiOutlineSearch />
               </HeaderSearchIcon>

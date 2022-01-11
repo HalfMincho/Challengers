@@ -27,7 +27,7 @@ export const HeaderBlock = styled.div`
     background: #f1f3f5;
     border-radius: 2em;
   }
-  
+
   input {
     box-sizing: border-box;
     width: 400px;
@@ -50,7 +50,7 @@ export const HeaderBlock = styled.div`
 
     border: none;
     border-radius: 0.3em;
-    background-color: #f06595;
+    background-color: #ff3257;
     color: white;
   }
   .navbar__right-side_login {

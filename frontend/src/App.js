@@ -5,9 +5,12 @@ import Header from './layouts/Header';
 import SignUp from './components/SignUp';
 import MainPage from './pages/MainPage';
 import ChallengeListPage from './pages/ChallengeListPage';
+import ChallengeDetailPage from './pages/ChallengeDetailPage';
 
 const GlobalStyle = createGlobalStyle`
-  body {  
+  .pageContainer {
+    width: 75%;
+    margin: 0 auto;
   }
 `;
 
@@ -26,6 +29,7 @@ function App() {
         path="/recent"
         render={() => <ChallengeListPage number={24} title="신규 챌린지" type="recent" />}
       />
+      <Route path="/detail" render={() => <ChallengeDetailPage id={3} />} />
     </>
   );
 }
