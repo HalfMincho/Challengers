@@ -1,17 +1,7 @@
 import React from 'react';
 import Button from '@mui/material/Button';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#FF3257',
-    },
-    neutral: {
-      main: '#595959',
-    },
-  },
-});
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../styles/theme';
 
 const DefaultButton = ({ color, size, text, variant }) => {
   return (
