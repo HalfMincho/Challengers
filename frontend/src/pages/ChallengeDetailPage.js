@@ -10,8 +10,9 @@ const showChallengeInfo = (data) => {
   }
 };
 
-const ChallengeDetailPage = ({ id }) => {
+const ChallengeDetailPage = ({ match }) => {
   const [data, setData] = useState(null);
+  const { id } = match.params;
 
   useEffect(() => {
     const fetchData = async () => {

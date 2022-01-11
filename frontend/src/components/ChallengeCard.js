@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 const ChallengeCardBlock = styled.div`
@@ -35,17 +36,19 @@ const ChallengeCardBlock = styled.div`
   }
 `;
 
-const ChallengeCard = ({ name, start_at, auth_count_in_day, auth_day }) => {
+const ChallengeCard = ({ auth_count_in_day, auth_day, id, name, start_at }) => {
   return (
-    <ChallengeCardBlock>
-      <div className="cardImage"></div>
-      <p className="cardTitle">{name}</p>
-      <p className="cardStartDay">{start_at}부터 시작</p>
-      <div className="cardTag">
-        <span>{auth_count_in_day}일</span>
-        <span>{auth_day}일 동안</span>
-      </div>
-    </ChallengeCardBlock>
+    <Link to={`/challenge/detail/${id}`}>
+      <ChallengeCardBlock>
+        <div className="cardImage"></div>
+        <p className="cardTitle">{name}</p>
+        <p className="cardStartDay">{start_at}부터 시작</p>
+        <div className="cardTag">
+          <span>{auth_count_in_day}일</span>
+          <span>{auth_day}일 동안</span>
+        </div>
+      </ChallengeCardBlock>
+    </Link>
   );
 };
 

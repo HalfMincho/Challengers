@@ -7,6 +7,14 @@ import { Link } from 'react-router-dom';
 const Section = styled.div`
   margin: 5% 0;
 
+  a {
+    text-decoration: none;
+  }
+  a:link,
+  a:visited {
+    color: black;
+  }
+
   .sectionHeader {
     display: flex;
     justify-content: space-between;
@@ -16,14 +24,6 @@ const Section = styled.div`
     .sectionTitle {
       font-size: 1.5em;
       font-weight: 600;
-    }
-
-    a {
-      text-decoration: none;
-    }
-    a:link,
-    a:visited {
-      color: black;
     }
   }
 
@@ -41,6 +41,7 @@ const showChallengeCards = (data) => {
         <ChallengeCard
           auth_count_in_day={item.auth_count_in_day}
           auth_day={item.auth_day}
+          id={item.id}
           key={index}
           name={item.name}
           start_at={item.start_at}

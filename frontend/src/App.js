@@ -29,7 +29,7 @@ function App() {
         path="/recent"
         render={() => <ChallengeListPage number={24} title="신규 챌린지" type="recent" />}
       />
-      <Route path="/detail" render={() => <ChallengeDetailPage id={3} />} />
+      <Route component={ChallengeDetailPage} path="/challenge/detail/:id" />
     </>
   );
 }
