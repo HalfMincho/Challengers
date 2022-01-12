@@ -5,7 +5,7 @@ export type Challenge = {
   submitter: string;
   category: Category;
   name: string;
-  auth_way: number;
+  auth_way: string;
   auth_day: string;
   auth_count_in_day: number;
   start_at: Date;
@@ -21,7 +21,7 @@ export type ChallengeFromRequest = {
   submitter: string;
   category: Category;
   name: string;
-  auth_way: number;
+  auth_way: string;
   auth_day: string;
   auth_count_in_day: number;
   start_at: string;
@@ -37,7 +37,7 @@ export type ChallengeFromDB = {
   submitter: Buffer;
   category: Buffer;
   name: string;
-  auth_way: number;
+  auth_way: string;
   auth_day: string;
   auth_count_in_day: number;
   start_at: string;

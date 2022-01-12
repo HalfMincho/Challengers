@@ -337,3 +337,41 @@ export const DeleteChallenge = async (id: number) => {
     await connection.end();
   }
 };
+
+export const GetChallengeWithTitle = async (keyword: string, count: number) => {
+  const connection = await Connection();
+
+  if (keyword.length <= 0) {
+    return { status: 400, result: { error: "invalid_query_params" } };
+  }
+
+  if (isNaN(count)) {
+    count = 10;
+  }
+
+  const [rows] = (await connection.execute(
+    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+    start_at, end_at, cost, description, reg_date, views FROM challenge
+    WHERE name LIKE "%${keyword}%" ORDER BY views desc LIMIT 0, ${count}`,
+  )) as [rows: ChallengeFromDB[], field: unknown];
+
+  const refinedRows = await Promise.all(
+    rows.map(async (challenge: ChallengeFromDB) => {
+      const [category] = (await connection.execute(
+        `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
+          challenge.category,
+        ).replace(/-/gi, "")}")`,
+      )) as Array<Array<CategoryFromDB>>;
+
+      return {
+        ...challenge,
+        category: category[0].name,
+        submitter: uuidStringify(challenge["submitter"]),
+      };
+    }),
+  );
+
+  await connection.end();
+
+  return { status: 200, result: refinedRows };
+};
