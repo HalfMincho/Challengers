@@ -26,7 +26,7 @@ const Input = styled('input')({
   display: 'none',
 });
 
-const showRightSideButtons = () => {
+const RightSideButtons = () => {
   return (
     <CardActions>
       <Stack alignItems="center" direction="row" spacing={1}>
@@ -42,7 +42,7 @@ const showRightSideButtons = () => {
   );
 };
 
-const submitPhoto = () => {
+const PhotoSubimt = () => {
   return (
     <CardContent sx={{ padding: '30px' }}>
       <Divider variant="middle" />
@@ -98,7 +98,7 @@ const ChallengeInfo = ({ data }) => {
             <Typography color="text.secondary" sx={{ fontSize: 14 }}>
               {data.start_at}부터 시작
             </Typography>
-            {showRightSideButtons()}
+            <RightSideButtons />
           </Stack>
           <Typography sx={{ fontWeight: 500, fontSize: '1.5em' }}>{data.name}</Typography>
           <Stack alignItems="center" direction="row" spacing={1}>
@@ -127,7 +127,7 @@ const ChallengeInfo = ({ data }) => {
           </Typography>
           <Typography>{data.description}</Typography>
         </CardContent>
-        {submitPhoto()}
+        <PhotoSubimt />
       </Card>
     </ThemeProvider>
   );
