@@ -375,3 +375,57 @@ export const GetChallengeWithTitle = async (keyword: string, count: number) => {
 
   return { status: 200, result: refinedRows };
 };
+
+export const GetChallengeWithCategory = async (
+  categoryFromReq: Category,
+  count: number,
+) => {
+  const connection = await Connection();
+
+  if (categoryFromReq.length <= 0) {
+    return { status: 400, result: { error: "invalid_query_params" } };
+  }
+
+  if (isNaN(count)) {
+    count = 10;
+  }
+
+  const isCategory = (x: Category) => category.includes(x);
+
+  if (!isCategory(categoryFromReq)) {
+    return { status: 400, result: { error: "invalid_query_params" } };
+  }
+
+  const categoryUUID = (await connection.execute(
+    `SELECT uuid FROM category WHERE name="${categoryFromReq}"`,
+  )) as [categoryUUID: any[], field: unknown];
+
+  const [rows] = (await connection.execute(
+    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+    start_at, end_at, cost, description, reg_date, views FROM challenge
+    WHERE category=UNHEX("${uuidStringify(categoryUUID[0][0].uuid).replace(
+      /-/gi,
+      "",
+    )}") ORDER BY views desc LIMIT 0, ${count}`,
+  )) as [rows: ChallengeFromDB[], field: unknown];
+
+  const refinedRows = await Promise.all(
+    rows.map(async (challenge: ChallengeFromDB) => {
+      const [category] = (await connection.execute(
+        `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
+          challenge.category,
+        ).replace(/-/gi, "")}")`,
+      )) as Array<Array<CategoryFromDB>>;
+
+      return {
+        ...challenge,
+        category: category[0].name,
+        submitter: uuidStringify(challenge["submitter"]),
+      };
+    }),
+  );
+
+  await connection.end();
+
+  return { status: 200, result: refinedRows };
+};
