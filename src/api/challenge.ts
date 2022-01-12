@@ -7,9 +7,22 @@ import {
   PostChallenge,
   PutChallenge,
   DeleteChallenge,
+  GetChallengeWithTitle,
 } from "../services/challenge";
 
 const challengeRouter = express.Router();
+
+challengeRouter.get(
+  "/search",
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await GetChallengeWithTitle(
+      String(req.query.keyword),
+      Number(req.query.count),
+    );
+    res.status(status);
+    res.send(result);
+  },
+);
 
 challengeRouter.get(
   "/popular",
