@@ -34,25 +34,6 @@ const Section = styled.div`
   }
 `;
 
-const showChallengeCards = (data) => {
-  if (data) {
-    const arrayData = data.map((item, index) => {
-      return (
-        <ChallengeCard
-          auth_count_in_day={item.auth_count_in_day}
-          auth_day={item.auth_day}
-          id={item.id}
-          key={index}
-          name={item.name}
-          start_at={item.start_at}
-        />
-      );
-    });
-
-    return arrayData;
-  }
-};
-
 const ChallengeSection = ({ number, preview, title, type }) => {
   const [data, setData] = useState(null);
 
@@ -66,6 +47,7 @@ const ChallengeSection = ({ number, preview, title, type }) => {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -79,7 +61,19 @@ const ChallengeSection = ({ number, preview, title, type }) => {
             </span>
           )}
         </p>
-        <div className="cardContainer">{showChallengeCards(data)}</div>
+        <div className="cardContainer">
+          {data &&
+            data.map((item, index) => (
+              <ChallengeCard
+                auth_count_in_day={item.auth_count_in_day}
+                auth_day={item.auth_day}
+                id={item.id}
+                key={index}
+                name={item.name}
+                start_at={item.start_at}
+              />
+            ))}
+        </div>
       </Section>
     </>
   );
