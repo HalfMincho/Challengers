@@ -1798,6 +1798,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@emotion/react@npm:^11.7.1":
+  version: 11.7.1
+  resolution: "@emotion/react@npm:11.7.1"
+  dependencies:
+    "@babel/runtime": ^7.13.10
+    "@emotion/cache": ^11.7.1
+    "@emotion/serialize": ^1.0.2
+    "@emotion/sheet": ^1.1.0
+    "@emotion/utils": ^1.0.0
+    "@emotion/weak-memoize": ^0.2.5
+    hoist-non-react-statics: ^3.3.1
+  peerDependencies:
+    "@babel/core": ^7.0.0
+    react: ">=16.8.0"
+  peerDependenciesMeta:
+    "@babel/core":
+      optional: true
+    "@types/react":
+      optional: true
+  checksum: 3392aa71f9c68c16022947959f7f842174e6b075b3baf58e185462411cd9b5a87557109a9225b1abaa2d7200a08b7cb9d7f21aa035f0d36b2c89e19b2a124e02
+  languageName: node
+  linkType: hard
+
 "@emotion/serialize@npm:^1.0.2":
   version: 1.0.2
   resolution: "@emotion/serialize@npm:1.0.2"
@@ -4779,6 +4802,27 @@ __metadata:
   checksum: 036e973e665ba1a32c975e291d5f3d549bceeb7b1b983320d4598fb75d70fe20c5db5d62971ec0fe76cdbce83985a00ee42372416abfc3a5584465005a7855ed
   languageName: node
   linkType: hard
+
+"challengers@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "challengers@workspace:."
+  dependencies:
+    "@emotion/react": ^11.7.1
+    "@emotion/styled": ^11.6.0
+    "@mui/icons-material": ^5.2.5
+    "@mui/material": ^5.2.8
+    "@testing-library/jest-dom": ^5.11.4
+    "@testing-library/react": ^11.1.0
+    "@testing-library/user-event": ^12.1.10
+    axios: ^0.21.1
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    react-icons: ^4.2.0
+    react-router-dom: ^5.2.0
+    react-scripts: 4.0.3
+    styled-components: ^5.3.0
+  languageName: unknown
+  linkType: soft
 
 "char-regex@npm:^1.0.2":
   version: 1.0.2
@@ -7878,7 +7922,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hoist-non-react-statics@npm:^3.0.0, hoist-non-react-statics@npm:^3.1.0, hoist-non-react-statics@npm:^3.3.2":
+"hoist-non-react-statics@npm:^3.0.0, hoist-non-react-statics@npm:^3.1.0, hoist-non-react-statics@npm:^3.3.1, hoist-non-react-statics@npm:^3.3.2":
   version: 3.3.2
   resolution: "hoist-non-react-statics@npm:3.3.2"
   dependencies:
@@ -12768,26 +12812,6 @@ __metadata:
   checksum: a05a46ce3145b42ac8b57633d3b90b6689c24697c1449bccf219349996d718a3cd0796e4910f4ab6abb5b024982cafd62345e88c8e7b42a45efca3bef1a0eb87
   languageName: node
   linkType: hard
-
-"react-template@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "react-template@workspace:."
-  dependencies:
-    "@emotion/styled": ^11.6.0
-    "@mui/icons-material": ^5.2.5
-    "@mui/material": ^5.2.8
-    "@testing-library/jest-dom": ^5.11.4
-    "@testing-library/react": ^11.1.0
-    "@testing-library/user-event": ^12.1.10
-    axios: ^0.21.1
-    react: ^17.0.2
-    react-dom: ^17.0.2
-    react-icons: ^4.2.0
-    react-router-dom: ^5.2.0
-    react-scripts: 4.0.3
-    styled-components: ^5.3.0
-  languageName: unknown
-  linkType: soft
 
 "react-transition-group@npm:^4.4.2":
   version: 4.4.2
