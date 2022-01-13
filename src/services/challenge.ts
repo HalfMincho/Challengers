@@ -1,5 +1,5 @@
 import express from "express";
-import Connection from "./../config/mysql";
+import pool from "./../config/mysql";
 import { stringify as uuidStringify, v4 as uuidv4 } from "uuid";
 
 import { Validate } from "./middlewares/validation";
@@ -15,22 +15,20 @@ import { category } from "../types/const";
 import { ChallengeSchema } from "../schema/challenge";
 
 export const GetChallenge = async (id: number) => {
-  const connection = await Connection();
-
   if (isNaN(id)) {
     return { status: 400, result: { error: "invalid_id" } };
   }
 
-  const result = (await connection.execute(
+  const result = (await pool.execute(
     `SELECT id FROM challenge WHERE id=${id}`,
   )) as [result: Array<Object>, field: unknown];
 
   if (result[0].length < 1) {
-    return { status: 400, result: { error: "challenge_no_exists" } };
+    return { status: 400, result: { error: "challenge_not_exists" } };
   }
 
   const [row] =
-    (await connection.execute(`SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+    (await pool.execute(`SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
   start_at, end_at, cost, description, reg_date, views FROM challenge WHERE id=${id}`)) as [
       row: ChallengeFromDB[],
       field: unknown,
@@ -38,7 +36,7 @@ export const GetChallenge = async (id: number) => {
 
   const refinedRow = await Promise.all(
     row.map(async (challenge: ChallengeFromDB) => {
-      const [category] = (await connection.execute(
+      const [category] = (await pool.execute(
         `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
           challenge.category,
         ).replace(/-/gi, "")}")`,
@@ -53,41 +51,35 @@ export const GetChallenge = async (id: number) => {
   );
 
   try {
-    await connection.beginTransaction();
-    await connection.execute(
-      `UPDATE challenge SET views = views + 1 WHERE id=${id}`,
-    );
-    await connection.commit();
+    await (await pool.getConnection()).beginTransaction();
+    await pool.execute(`UPDATE challenge SET views = views + 1 WHERE id=${id}`);
+    await (await pool.getConnection()).commit();
 
     row[0]["views"] += 1;
   } catch (e) {
-    await connection.rollback();
+    await (await pool.getConnection()).rollback();
 
     console.error(e);
 
     return { status: 500, result: { error: "exception_occurred" } };
-  } finally {
-    await connection.end();
   }
 
   return { status: 200, result: refinedRow[0] };
 };
 
 export const GetPopularChallenge = async (count: number) => {
-  const connection = await Connection();
-
   if (isNaN(count)) {
     count = 10;
   }
 
-  const [rows] = (await connection.execute(
-    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description, reg_date, views 
+  const [rows] = (await pool.execute(
+    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description, reg_date, views
     FROM challenge ORDER BY views desc LIMIT 0, ${count}`,
   )) as [rows: ChallengeFromDB[], field: unknown];
 
   const refinedRows = await Promise.all(
     rows.map(async (challenge: ChallengeFromDB) => {
-      const [category] = (await connection.execute(
+      const [category] = (await pool.execute(
         `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
           challenge.category,
         ).replace(/-/gi, "")}")`,
@@ -100,27 +92,23 @@ export const GetPopularChallenge = async (count: number) => {
       };
     }),
   );
-
-  await connection.end();
 
   return { status: 200, result: refinedRows };
 };
 
 export const GetRecentChallenge = async (count: number) => {
-  const connection = await Connection();
-
   if (isNaN(count)) {
     count = 10;
   }
 
-  const [rows] = (await connection.execute(
-    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description, reg_date, views 
+  const [rows] = (await pool.execute(
+    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description, reg_date, views
     FROM challenge ORDER BY reg_date desc LIMIT 0, ${count}`,
   )) as [rows: ChallengeFromDB[], field: unknown];
 
   const refinedRows = await Promise.all(
     rows.map(async (challenge: ChallengeFromDB) => {
-      const [category] = (await connection.execute(
+      const [category] = (await pool.execute(
         `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
           challenge.category,
         ).replace(/-/gi, "")}")`,
@@ -134,13 +122,10 @@ export const GetRecentChallenge = async (count: number) => {
     }),
   );
 
-  await connection.end();
-
   return { status: 200, result: refinedRows };
 };
 
 export const PostChallenge = async (req: express.Request) => {
-  const connection = await Connection();
   const { body }: { body: ChallengeFromRequest } = req;
 
   const buffer = Buffer.alloc(16);
@@ -167,7 +152,7 @@ export const PostChallenge = async (req: express.Request) => {
     return { status: 400, result: { error: "no_required_args" } };
   }
 
-  const categoryUUID = (await connection.execute(
+  const categoryUUID = (await pool.execute(
     `SELECT uuid FROM category WHERE name="${body.category}"`,
   )) as [categoryUUID: any[], field: unknown];
 
@@ -186,16 +171,16 @@ export const PostChallenge = async (req: express.Request) => {
   ];
 
   try {
-    await connection.beginTransaction();
+    await (await pool.getConnection()).beginTransaction();
 
-    await connection.execute(
+    await pool.execute(
       `INSERT INTO challenge (uuid, submitter, category, name,
       auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description)
     VALUE (?,?,?,?,?,?,?,?,?,?,?)`,
       params,
     );
 
-    const [rows] = (await connection.execute("SELECT LAST_INSERT_ID()")) as [
+    const [rows] = (await pool.execute("SELECT LAST_INSERT_ID()")) as [
       rows: Array<Object>,
       field: unknown,
     ];
@@ -204,33 +189,29 @@ export const PostChallenge = async (req: express.Request) => {
       JSON.parse(JSON.stringify(rows[0])),
     )[0];
 
-    await connection.commit();
+    await (await pool.getConnection()).commit();
 
     return { status: 200, result: { created: created_challenge_id } };
   } catch (e) {
-    await connection.rollback();
+    await (await pool.getConnection()).rollback();
 
     console.error(e);
 
     return { status: 500, result: { error: "exception_occurred" } };
-  } finally {
-    await connection.end();
   }
 };
 
 export const PutChallenge = async (id: number, req: express.Request) => {
-  const connection = await Connection();
-
   if (isNaN(id)) {
     return { status: 400, result: { error: "invalid_id" } };
   }
 
-  const result = (await connection.execute(
+  const result = (await pool.execute(
     `SELECT id FROM challenge WHERE id=${id}`,
   )) as [result: Array<Object>, field: unknown];
 
   if (result[0].length < 1) {
-    return { status: 400, result: { error: "challenge_no_exists" } };
+    return { status: 400, result: { error: "challenge_not_exists" } };
   }
 
   const { body }: { body: ChallengeFromRequest } = req;
@@ -255,7 +236,7 @@ export const PutChallenge = async (id: number, req: express.Request) => {
     return { status: 400, result: { error: "no_required_args" } };
   }
 
-  const categoryUUID = (await connection.execute(
+  const categoryUUID = (await pool.execute(
     `SELECT uuid FROM category WHERE name="${body.category}"`,
   )) as [categoryUUID: any[], field: unknown];
 
@@ -272,9 +253,9 @@ export const PutChallenge = async (id: number, req: express.Request) => {
   ];
 
   try {
-    await connection.beginTransaction();
+    await (await pool.getConnection()).beginTransaction();
 
-    await connection.execute(
+    await pool.execute(
       `UPDATE challenge SET category=?, name=?, auth_way=?, auth_day=?,
       auth_count_in_day=?, start_at=?, end_at=?, cost=?, description=? WHERE id=${id}`,
       [
@@ -290,57 +271,49 @@ export const PutChallenge = async (id: number, req: express.Request) => {
       ],
     );
 
-    await connection.commit();
+    await (await pool.getConnection()).commit();
 
     return { status: 200, result: { modified: id } };
   } catch (e) {
-    await connection.rollback();
+    await (await pool.getConnection()).rollback();
 
     console.error(e);
 
     return { status: 500, result: { error: "exception_occurred" } };
-  } finally {
-    await connection.end();
   }
 };
 
 export const DeleteChallenge = async (id: number) => {
-  const connection = await Connection();
-
   if (isNaN(id)) {
     return { status: 400, result: { error: "invalid_id" } };
   }
 
-  const result = (await connection.execute(
+  const result = (await pool.execute(
     `SELECT id FROM challenge WHERE id=${id}`,
   )) as [result: Array<Object>, field: unknown];
 
   if (result[0].length < 1) {
-    return { status: 400, result: { error: "challenge_no_exists" } };
+    return { status: 400, result: { error: "challenge_not_exists" } };
   }
 
   try {
-    await connection.beginTransaction();
+    await (await pool.getConnection()).beginTransaction();
 
-    await connection.execute(`DELETE FROM challenge WHERE id=${id}`);
+    await pool.execute(`DELETE FROM challenge WHERE id=${id}`);
 
-    await connection.commit();
+    await (await pool.getConnection()).commit();
 
     return { status: 200, result: { deleted: id } };
   } catch (e) {
-    await connection.rollback();
+    await (await pool.getConnection()).rollback();
 
     console.error(e);
 
     return { status: 500, result: { error: "exception_occurred" } };
-  } finally {
-    await connection.end();
   }
 };
 
 export const GetChallengeWithTitle = async (keyword: string, count: number) => {
-  const connection = await Connection();
-
   if (keyword.length <= 0) {
     return { status: 400, result: { error: "invalid_query_params" } };
   }
@@ -349,7 +322,7 @@ export const GetChallengeWithTitle = async (keyword: string, count: number) => {
     count = 10;
   }
 
-  const [rows] = (await connection.execute(
+  const [rows] = (await pool.execute(
     `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
     start_at, end_at, cost, description, reg_date, views FROM challenge
     WHERE name LIKE "%${keyword}%" ORDER BY views desc LIMIT 0, ${count}`,
@@ -357,7 +330,7 @@ export const GetChallengeWithTitle = async (keyword: string, count: number) => {
 
   const refinedRows = await Promise.all(
     rows.map(async (challenge: ChallengeFromDB) => {
-      const [category] = (await connection.execute(
+      const [category] = (await pool.execute(
         `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
           challenge.category,
         ).replace(/-/gi, "")}")`,
@@ -371,8 +344,6 @@ export const GetChallengeWithTitle = async (keyword: string, count: number) => {
     }),
   );
 
-  await connection.end();
-
   return { status: 200, result: refinedRows };
 };
 
@@ -380,8 +351,6 @@ export const GetChallengeWithCategory = async (
   categoryFromReq: Category,
   count: number,
 ) => {
-  const connection = await Connection();
-
   if (categoryFromReq.length <= 0) {
     return { status: 400, result: { error: "invalid_query_params" } };
   }
@@ -396,11 +365,11 @@ export const GetChallengeWithCategory = async (
     return { status: 400, result: { error: "invalid_query_params" } };
   }
 
-  const categoryUUID = (await connection.execute(
+  const categoryUUID = (await pool.execute(
     `SELECT uuid FROM category WHERE name="${categoryFromReq}"`,
   )) as [categoryUUID: any[], field: unknown];
 
-  const [rows] = (await connection.execute(
+  const [rows] = (await pool.execute(
     `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
     start_at, end_at, cost, description, reg_date, views FROM challenge
     WHERE category=UNHEX("${uuidStringify(categoryUUID[0][0].uuid).replace(
@@ -411,7 +380,7 @@ export const GetChallengeWithCategory = async (
 
   const refinedRows = await Promise.all(
     rows.map(async (challenge: ChallengeFromDB) => {
-      const [category] = (await connection.execute(
+      const [category] = (await pool.execute(
         `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
           challenge.category,
         ).replace(/-/gi, "")}")`,
@@ -424,8 +393,6 @@ export const GetChallengeWithCategory = async (
       };
     }),
   );
-
-  await connection.end();
 
   return { status: 200, result: refinedRows };
 };

@@ -6,7 +6,7 @@ export const ChallengeSchema: Schema = {
     submitter: "string",
     category: "string",
     name: "string",
-    auth_way: "number",
+    auth_way: "string",
     auth_day: "string",
     auth_count_in_day: "number",
     start_at: "string",
