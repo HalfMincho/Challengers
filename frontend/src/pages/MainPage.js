@@ -1,7 +1,6 @@
 import React from 'react';
 import ChallengeSection from '../components/ChallengeSection';
 import MainBanner from '../components/MainBanner';
-import '../styles/MainPage.scss';
 
 const MainPage = () => {
   return (
