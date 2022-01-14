@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 const ChallengeCardBlock = styled.div`
-  margin-bottom: 30px;
-
   * {
     margin-bottom: 5px;
   }
@@ -13,15 +11,16 @@ const ChallengeCardBlock = styled.div`
     height: 200px;
     width: 250px;
     border: 1px solid grey;
-    margin-bottom: 10px;
   }
 
   .cardTitle {
+    margin-top: 10px;
     font-size: 1.2em;
     font-weight: 500;
   }
 
   .cardStartDay {
+    margin-top: 0;
     color: grey;
     font-size: 0.9em;
   }

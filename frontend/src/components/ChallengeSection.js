@@ -28,9 +28,11 @@ const Section = styled.div`
   }
 
   .cardContainer {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    justify-items: center;
+    row-gap: 50px;
+    column-gap: 10px;
   }
 `;
 
