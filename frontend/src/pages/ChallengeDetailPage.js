@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import Stack from '@mui/material/Stack';
 import DefaultButton from '../components/DefaultButton';
 import ChallengeInfo from '../components/ChallengeInfo';
 import axios from 'axios';
+import SubmitSection from '../components/SubmitSection';
+import styled from 'styled-components';
 
-const showChallengeInfo = (data) => {
-  if (data) {
-    return <ChallengeInfo data={data} />;
+const Buttons = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 50px;
+
+  button {
+    margin: 0 20px;
   }
-};
+`;
 
 const ChallengeDetailPage = ({ match }) => {
   const [data, setData] = useState(null);
@@ -29,11 +34,12 @@ const ChallengeDetailPage = ({ match }) => {
 
   return (
     <div className="pageContainer">
-      {showChallengeInfo(data)}
-      <Stack direction="row" justifyContent="center" marginTop={5} spacing={5}>
+      {data && <ChallengeInfo data={data} />}
+      <SubmitSection />
+      <Buttons>
         <DefaultButton color="neutral" size="large" text="목록으로" variant="outlined" />
         <DefaultButton color="primary" size="large" text="참가하기" variant="contained" />
-      </Stack>
+      </Buttons>
     </div>
   );
 };
