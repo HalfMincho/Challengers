@@ -19,9 +19,9 @@
     "styled-components": "^5.3.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "set \"GENERATE_SOURCEMAP=false\" &&  react-scripts build",
-    "test": "react-scripts test",
+    "start": "react-app-rewired start",
+    "build": "set \"GENERATE_SOURCEMAP=false\" &&  react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject",
     "deploy": "gh-pages --dotfiles -d build -b deployment",
     "lint": "eslint src/"
@@ -40,6 +40,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "babel-plugin-direct-import": "^1.0.0",
+    "babel-plugin-import": "^1.13.3",
+    "customize-cra": "^1.0.0",
+    "react-app-rewired": "^2.1.11"
   },
   "proxy": ""
 }
