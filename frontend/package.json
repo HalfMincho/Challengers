@@ -3,10 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@emotion/react": "^11.7.1",
-    "@emotion/styled": "^11.6.0",
-    "@mui/icons-material": "^5.2.5",
-    "@mui/material": "^5.2.8",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -19,9 +15,9 @@
     "styled-components": "^5.3.0"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "set \"GENERATE_SOURCEMAP=false\" &&  react-app-rewired build",
-    "test": "react-app-rewired test",
+    "start": "react-scripts start",
+    "build": "set \"GENERATE_SOURCEMAP=false\" &&  react-scripts build",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "deploy": "gh-pages --dotfiles -d build -b deployment",
     "lint": "eslint src/"
