@@ -3,6 +3,7 @@ import nodemailer from "nodemailer";
 import pool from "./../config/mysql";
 import { stringify as uuidStringify, v4 as uuidv4 } from "uuid";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
 import { Validate } from "./middlewares/validation";
 import {
@@ -291,6 +292,45 @@ export const Login = async (req: express.Request) => {
     return {
       status: 200,
       result: { accessToken: accessToken, refreshToken: refreshToken },
+    };
+  }
+};
+
+export const TokenRefresh = async (req: express.Request) => {
+  if (req.headers.authorization && req.headers.refresh) {
+    const authToken = req.headers.authorization.split("Challengers ")[1];
+    const refreshToken = req.headers.refresh as string;
+
+    const authResult = JWTVerify(authToken);
+
+    const decoded = jwt.decode(authToken) as { email: string };
+
+    if (decoded === null) {
+      return { status: 401, result: { error: "unauthorized" } };
+    }
+
+    const refreshResult = await JWTRefreshVerify(refreshToken, decoded.email);
+
+    if (authResult.ok === false && authResult.message === "jwt expired") {
+      if (refreshResult === false) {
+        return { status: 401, result: { error: "unauthorized" } };
+      } else {
+        const newAccessToken = JWTSign(decoded.email);
+
+        return {
+          status: 200,
+          result: { accessToken: newAccessToken, refreshToken },
+        };
+      }
+    } else {
+      return { status: 400, result: { error: "access_token_is_valid" } };
+    }
+  } else {
+    return {
+      status: 400,
+      result: {
+        message: "no_required_headers",
+      },
     };
   }
 };

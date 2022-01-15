@@ -12,6 +12,8 @@ import {
 } from "../services/challenge";
 import { Category } from "../types/challenge";
 
+import { AuthJWT } from "../services/middlewares/auth";
+
 const challengeRouter = express.Router();
 
 challengeRouter.get(

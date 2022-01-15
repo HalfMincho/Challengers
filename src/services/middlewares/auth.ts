@@ -14,7 +14,6 @@ export const AuthJWT = (
       next();
     } else {
       res.status(401).send({
-        ok: false,
         message: result.message,
       });
     }
