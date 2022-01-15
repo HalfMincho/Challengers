@@ -2,6 +2,7 @@ import express from "express";
 
 import {
   GenerateRegisterToken,
+  Register,
   SendRegisterMail,
   VerifyRegisterToken,
 } from "../services/account";
@@ -30,6 +31,15 @@ accountRouter.post(
   "/verify-token",
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await VerifyRegisterToken(req);
+    res.status(status);
+    res.send(result);
+  },
+);
+
+accountRouter.post(
+  "/register",
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await Register(req);
     res.status(status);
     res.send(result);
   },

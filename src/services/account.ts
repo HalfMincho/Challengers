@@ -2,16 +2,21 @@ import express from "express";
 import nodemailer from "nodemailer";
 import pool from "./../config/mysql";
 import { stringify as uuidStringify, v4 as uuidv4 } from "uuid";
+import crypto from "crypto";
 
 import { Validate } from "./middlewares/validation";
 import {
   RegisterEmail,
+  RegisterInfo,
   RegisterTokenVerificationRequest,
 } from "../types/account";
-import { RegisterEmailSchema } from "../schema";
+import {
+  RegisterEmailSchema,
+  RegisterTokenVerificationSchema,
+  RegisterInfoSchema,
+} from "../schema";
 import { mailContent } from "../types/const";
 import { mailConfig } from "../config/mail";
-import { RegisterTokenVerificationSchema } from "../schema/account";
 
 const CheckDuplicateMail = async (address: string) => {
   const [[{ "COUNT(*)": rows }]] = (await pool.execute(
@@ -133,7 +138,7 @@ export const VerifyRegisterToken = async (req: express.Request) => {
     )) as [rows: any[], field: unknown];
 
     if (rows !== 1) {
-      return { status: 500, result: { error: "verify_token_failed" } };
+      return { status: 404, result: { error: "verify_token_failed" } };
     }
 
     await pool.execute(
@@ -142,6 +147,87 @@ export const VerifyRegisterToken = async (req: express.Request) => {
 
     return { status: 200, result: { message: "token_verified" } };
   } catch (e) {
+    console.error(e);
+
+    return { status: 500, result: { error: "exception_occurred" } };
+  }
+};
+
+export const Register = async (req: express.Request) => {
+  const { body }: { body: RegisterInfo } = req;
+
+  const buffer = Buffer.alloc(16);
+  uuidv4({}, buffer);
+  const userUUID = buffer;
+
+  const [[{ "COUNT(*)": rows }]] = (await pool.execute(
+    `SELECT COUNT(*) FROM mail_verification WHERE token="${body.token}" AND email="${body.email}" AND used=1`,
+  )) as [rows: any[], field: unknown];
+
+  if (rows !== 1) {
+    return { status: 404, result: { error: "token_verification_is_needed" } };
+  }
+
+  while (true) {
+    const [[{ "COUNT(*)": accounts }]] = (await pool.execute(`
+    SELECT COUNT(*) FROM account WHERE uuid=UNHEX("${uuidStringify(
+      userUUID,
+    ).replace(/-/gi, "")}")
+    `)) as [accounts: any[], field: unknown];
+
+    if (accounts === 0) {
+      break;
+    }
+  }
+
+  const validatePassword = (content: string) => {
+    const passwordRegex =
+      // eslint-disable-next-line no-useless-escape
+      /^([\x21-\x7e]{8,})$/;
+    return passwordRegex.test(content);
+  };
+
+  if (!validatePassword(body.password)) {
+    return { status: 400, result: { error: "password_policy_mismatch" } };
+  }
+
+  const [[{ "COUNT(*)": emails }]] = (await pool.execute(`
+    SELECT COUNT(*) FROM account WHERE email LIKE "${body.email}"
+    `)) as [emails: any[], field: unknown];
+
+  if (emails !== 0) {
+    return { status: 400, result: { error: "email_already_exists" } };
+  } else if (body.email.length > 255) {
+    return { status: 400, result: { error: "email_too_long" } };
+  }
+
+  if (body.name.length > 255) {
+    return { status: 400, result: { error: "name_too_long" } };
+  }
+
+  const hashedPassword = crypto
+    .createHash("sha512")
+    .update(body.password)
+    .digest("hex");
+
+  try {
+    await (await pool.getConnection()).beginTransaction();
+
+    await pool.execute(
+      `INSERT INTO account (uuid, email, password, name) VALUE (?,?,?,?)`,
+      [userUUID, body.email, hashedPassword, body.name],
+    );
+
+    await pool.execute(
+      `DELETE FROM mail_verification WHERE token="${body.token}"`,
+    );
+
+    await (await pool.getConnection()).commit();
+
+    return { status: 200, result: { success: "register_success" } };
+  } catch (e) {
+    await (await pool.getConnection()).rollback();
+
     console.error(e);
 
     return { status: 500, result: { error: "exception_occurred" } };
