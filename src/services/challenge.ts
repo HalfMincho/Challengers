@@ -12,7 +12,7 @@ import {
   ChallengeFromRequest,
 } from "./../types/challenge";
 import { category } from "../types/const";
-import { ChallengeSchema } from "../schema/challenge";
+import { ChallengeSchema } from "../schema";
 
 export const GetChallenge = async (id: number) => {
   if (isNaN(id)) {
