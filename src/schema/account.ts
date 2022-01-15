@@ -24,3 +24,11 @@ export const RegisterInfoSchema: Schema = {
   },
   required: ["name", "email", "password", "token"],
 };
+
+export const LoginInfoSchema: Schema = {
+  fields: {
+    email: "string",
+    password: "string",
+  },
+  required: ["email", "password"],
+};

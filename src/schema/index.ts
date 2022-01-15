@@ -4,4 +4,5 @@ export {
   RegisterEmailSchema,
   RegisterTokenVerificationSchema,
   RegisterInfoSchema,
+  LoginInfoSchema,
 } from "./account";

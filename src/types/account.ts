@@ -8,8 +8,13 @@ export type RegisterTokenVerificationRequest = {
 };
 
 export type RegisterInfo = {
-  name: "string";
-  email: "string";
-  password: "string";
-  token: "string";
+  name: string;
+  email: string;
+  password: string;
+  token: string;
+};
+
+export type LoginInfo = {
+  email: string;
+  password: string;
 };
