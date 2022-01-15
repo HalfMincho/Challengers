@@ -1,6 +1,10 @@
 import express from "express";
 
-import { GenerateRegisterToken, SendRegisterMail } from "../services/account";
+import {
+  GenerateRegisterToken,
+  SendRegisterMail,
+  VerifyRegisterToken,
+} from "../services/account";
 
 const accountRouter = express.Router();
 
@@ -19,6 +23,15 @@ accountRouter.post(
       res.status(status);
       res.send(result);
     }
+  },
+);
+
+accountRouter.post(
+  "/verify-token",
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await VerifyRegisterToken(req);
+    res.status(status);
+    res.send(result);
   },
 );
 

@@ -4,10 +4,14 @@ import pool from "./../config/mysql";
 import { stringify as uuidStringify, v4 as uuidv4 } from "uuid";
 
 import { Validate } from "./middlewares/validation";
-import { RegisterEmail } from "../types/account";
+import {
+  RegisterEmail,
+  RegisterTokenVerificationRequest,
+} from "../types/account";
 import { RegisterEmailSchema } from "../schema";
 import { mailContent } from "../types/const";
 import { mailConfig } from "../config/mail";
+import { RegisterTokenVerificationSchema } from "../schema/account";
 
 const CheckDuplicateMail = async (address: string) => {
   const [[{ "COUNT(*)": rows }]] = (await pool.execute(
@@ -107,6 +111,36 @@ export const SendRegisterMail = async (req: express.Request, token: string) => {
     });
 
     return { status: 200, result: { success: "send_registration_mail" } };
+  } catch (e) {
+    console.error(e);
+
+    return { status: 500, result: { error: "exception_occurred" } };
+  }
+};
+
+export const VerifyRegisterToken = async (req: express.Request) => {
+  const { body }: { body: RegisterTokenVerificationRequest } = req;
+
+  let reqBodyValidation = await Validate(body, RegisterTokenVerificationSchema);
+
+  if (!reqBodyValidation) {
+    return { status: 400, result: { error: "no_required_args" } };
+  }
+
+  try {
+    const [[{ "COUNT(*)": rows }]] = (await pool.execute(
+      `SELECT COUNT(*) FROM mail_verification WHERE token="${body.token}" AND email="${body.email}" AND used=0`,
+    )) as [rows: any[], field: unknown];
+
+    if (rows !== 1) {
+      return { status: 500, result: { error: "verify_token_failed" } };
+    }
+
+    await pool.execute(
+      `UPDATE mail_verification SET used=1 WHERE token="${body.token}"`,
+    );
+
+    return { status: 200, result: { message: "token_verified" } };
   } catch (e) {
     console.error(e);
 
