@@ -6,3 +6,11 @@ export const RegisterEmailSchema: Schema = {
   },
   required: ["email"],
 };
+
+export const RegisterTokenVerificationSchema: Schema = {
+  fields: {
+    email: "string",
+    token: "string",
+  },
+  required: ["email", "token"],
+};
