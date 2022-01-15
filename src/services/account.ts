@@ -9,14 +9,26 @@ import {
   RegisterEmail,
   RegisterInfo,
   RegisterTokenVerificationRequest,
+  LoginInfo,
 } from "../types/account";
 import {
   RegisterEmailSchema,
   RegisterTokenVerificationSchema,
   RegisterInfoSchema,
+  LoginInfoSchema,
 } from "../schema";
 import { mailContent } from "../types/const";
 import { mailConfig } from "../config/mail";
+
+import { JWTSign, JWTVerify, JWTRefresh, JWTRefreshVerify } from "./utils/jwt";
+
+const GetUUID = async (email: string) => {
+  const [[{ uuid }]] = (await pool.execute(
+    `SELECT uuid FROM account WHERE email LIKE "${email}"`,
+  )) as [uuid: any[], field: unknown];
+
+  return uuid;
+};
 
 const CheckDuplicateMail = async (address: string) => {
   const [[{ "COUNT(*)": rows }]] = (await pool.execute(
@@ -126,7 +138,10 @@ export const SendRegisterMail = async (req: express.Request, token: string) => {
 export const VerifyRegisterToken = async (req: express.Request) => {
   const { body }: { body: RegisterTokenVerificationRequest } = req;
 
-  let reqBodyValidation = await Validate(body, RegisterTokenVerificationSchema);
+  const reqBodyValidation = await Validate(
+    body,
+    RegisterTokenVerificationSchema,
+  );
 
   if (!reqBodyValidation) {
     return { status: 400, result: { error: "no_required_args" } };
@@ -155,6 +170,12 @@ export const VerifyRegisterToken = async (req: express.Request) => {
 
 export const Register = async (req: express.Request) => {
   const { body }: { body: RegisterInfo } = req;
+
+  const reqBodyValidation = await Validate(body, RegisterInfoSchema);
+
+  if (!reqBodyValidation) {
+    return { status: 400, result: { error: "no_required_args" } };
+  }
 
   const buffer = Buffer.alloc(16);
   uuidv4({}, buffer);
@@ -231,5 +252,45 @@ export const Register = async (req: express.Request) => {
     console.error(e);
 
     return { status: 500, result: { error: "exception_occurred" } };
+  }
+};
+
+export const Login = async (req: express.Request) => {
+  const { body }: { body: LoginInfo } = req;
+
+  const reqBodyValidation = await Validate(body, LoginInfoSchema);
+
+  if (!reqBodyValidation) {
+    return { status: 400, result: { error: "no_required_args" } };
+  }
+
+  const [[{ password }]] = (await pool.execute(
+    `SELECT password FROM account WHERE email LIKE "${body.email}"`,
+  )) as [row: any[], field: unknown];
+
+  if (password === undefined || password.length === 0) {
+    return { status: 403, result: { error: "authentication_failed" } };
+  }
+
+  const hashedPassword = crypto
+    .createHash("sha512")
+    .update(body.password)
+    .digest("hex");
+
+  if (hashedPassword !== password) {
+    return { status: 403, result: { error: "authentication_failed" } };
+  } else {
+    const accessToken = JWTSign(body.email);
+    const refreshToken = JWTRefresh();
+
+    await pool.execute(
+      `INSERT INTO refresh_token (email, refresh_token) VALUE (?,?)`,
+      [body.email, refreshToken],
+    );
+
+    return {
+      status: 200,
+      result: { accessToken: accessToken, refreshToken: refreshToken },
+    };
   }
 };
