@@ -14,3 +14,13 @@ export const RegisterTokenVerificationSchema: Schema = {
   },
   required: ["email", "token"],
 };
+
+export const RegisterInfoSchema: Schema = {
+  fields: {
+    name: "string",
+    email: "string",
+    password: "string",
+    token: "string",
+  },
+  required: ["name", "email", "password", "token"],
+};
