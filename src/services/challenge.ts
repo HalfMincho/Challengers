@@ -13,6 +13,7 @@ import {
 } from "./../types/challenge";
 import { category } from "../types/const";
 import { ChallengeSchema } from "../schema";
+import { GetNameFromUUID } from "./account";
 
 export const GetChallenge = async (id: number) => {
   if (isNaN(id)) {
@@ -42,10 +43,12 @@ export const GetChallenge = async (id: number) => {
         ).replace(/-/gi, "")}")`,
       )) as Array<Array<CategoryFromDB>>;
 
+      const username = await GetNameFromUUID(challenge.submitter);
+
       return {
         ...challenge,
         category: category[0].name,
-        submitter: uuidStringify(challenge["submitter"]),
+        submitter: username,
       };
     }),
   );
@@ -136,8 +139,9 @@ export const PostChallenge = async (req: express.Request) => {
     const dateRegex =
       /[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]/;
 
-    if (!dateRegex.test(body.start_at) || !dateRegex.test(body.end_at))
+    if (!dateRegex.test(body.start_at) || !dateRegex.test(body.end_at)) {
       return { status: 400, result: { error: "no_required_args" } };
+    }
   }
 
   let reqBodyValidation = await Validate(body, ChallengeSchema);
@@ -156,9 +160,13 @@ export const PostChallenge = async (req: express.Request) => {
     `SELECT uuid FROM category WHERE name="${body.category}"`,
   )) as [categoryUUID: any[], field: unknown];
 
+  const [[{ uuid: userUUID }]] = (await pool.execute(
+    `SELECT uuid FROM account WHERE email="${body.email}"`,
+  )) as unknown as [[{ uuid: Buffer }]];
+
   const params = [
     challengeUUID,
-    challengeUUID,
+    userUUID,
     categoryUUID[0][0].uuid,
     body.name,
     body.auth_way,

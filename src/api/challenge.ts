@@ -70,6 +70,7 @@ challengeRouter.get(
 
 challengeRouter.post(
   "/",
+  AuthJWT,
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await PostChallenge(req);
     res.status(status);
