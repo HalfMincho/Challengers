@@ -26,9 +26,20 @@ import { JWTSign, JWTVerify, JWTRefresh, JWTRefreshVerify } from "./utils/jwt";
 const GetUUID = async (email: string) => {
   const [[{ uuid }]] = (await pool.execute(
     `SELECT uuid FROM account WHERE email LIKE "${email}"`,
-  )) as [uuid: any[], field: unknown];
+  )) as unknown as [[{ uuid: Buffer }]];
 
   return uuid;
+};
+
+export const GetNameFromUUID = async (uuid: Buffer) => {
+  const [[{ name }]] = (await pool.execute(
+    `SELECT name FROM account WHERE uuid=UNHEX("${uuidStringify(uuid).replace(
+      /-/gi,
+      "",
+    )}")`,
+  )) as unknown as [[{ name: string }]];
+
+  return name;
 };
 
 const CheckDuplicateMail = async (address: string) => {
