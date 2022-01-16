@@ -21,10 +21,10 @@ export const JWTVerify = (token: string) => {
       ok: true,
       email: decoded.email,
     };
-  } catch (e) {
+  } catch (e: unknown) {
     return {
       ok: false,
-      message: e,
+      message: (e as Error).message,
     };
   }
 };
