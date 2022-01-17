@@ -292,7 +292,7 @@ export const Login = async (req: express.Request) => {
   if (hashedPassword !== password) {
     return { status: 403, result: { error: "authentication_failed" } };
   } else {
-    const [[{ "COUNT(*)": oldRefreshTokenCount }]] = (await pool.execute(
+    const [[{ "COUNT(*)": expiredRefreshTokenCount }]] = (await pool.execute(
       `SELECT COUNT(*) FROM refresh_token WHERE
       (issued_at) < DATE_ADD(CURRENT_TIMESTAMP, INTERVAL -2 WEEK)
       AND email="${body.email}"`,
@@ -301,7 +301,7 @@ export const Login = async (req: express.Request) => {
     const accessToken = JWTSign(body.email);
     let refreshToken;
 
-    if (oldRefreshTokenCount === 1) {
+    if (expiredRefreshTokenCount === 1) {
       try {
         refreshToken = JWTRefresh();
         await (await pool.getConnection()).beginTransaction();
@@ -319,11 +319,24 @@ export const Login = async (req: express.Request) => {
         return { status: 500, result: { error: "exception_occurred" } };
       }
     } else {
-      const [[{ refresh_token }]] = (await pool.execute(
+      const [rows] = (await pool.execute(
         `SELECT refresh_token FROM refresh_token WHERE email="${body.email}"`,
-      )) as unknown as [[{ refresh_token: string }]];
+      )) as [rows: any[], field: unknown];
 
-      refreshToken = refresh_token;
+      if (rows.length === 0) {
+        refreshToken = JWTRefresh();
+
+        await pool.execute(
+          `INSERT INTO refresh_token (email, refresh_token) VALUE (?, ?)`,
+          [body.email, refreshToken],
+        );
+      } else {
+        const [[{ refresh_token: refresh_token }]] = (await pool.execute(
+          `SELECT refresh_token FROM refresh_token WHERE email="${body.email}"`,
+        )) as unknown as [[{ refresh_token: string }]];
+
+        refreshToken = refresh_token;
+      }
     }
 
     return {
