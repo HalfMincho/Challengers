@@ -40,5 +40,5 @@
   "devDependencies": {
     "babel-plugin-direct-import": "^1.0.0"
   },
-  "proxy": "https://api.challengers.halfmincho.com"
+  "proxy": ""
 }
