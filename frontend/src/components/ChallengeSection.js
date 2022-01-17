@@ -38,14 +38,18 @@ const Section = styled.div`
 
 const ChallengeSection = ({ number, preview, title, type }) => {
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await axios.get(`/challenge/${type}?count=${number}`).then((res) => setData(res.data));
+        setLoading(true);
+        const response = await axios.get(`/challenge/${type}?count=${number}`);
+        setData(response.data);
       } catch (e) {
         console.log(e);
       }
+      setLoading(false);
     };
 
     fetchData();

@@ -17,15 +17,19 @@ const Buttons = styled.div`
 
 const ChallengeDetailPage = ({ match }) => {
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
   const { id } = match.params;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await axios.get(`/challenge/${id}`).then((res) => setData(res.data));
+        setLoading(true);
+        const response = await axios.get(`/challenge/${id}`);
+        setData(response.data);
       } catch (e) {
         console.log(e);
       }
+      setLoading(false);
     };
 
     fetchData();
