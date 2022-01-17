@@ -30,6 +30,7 @@ export type ChallengeFromRequest = {
   description: string;
   reg_date: string;
   views: number;
+  email: string;
 };
 
 export type ChallengeFromDB = {

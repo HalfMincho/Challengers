@@ -12,6 +12,8 @@ import {
 } from "../services/challenge";
 import { Category } from "../types/challenge";
 
+import { AuthJWT } from "../services/middlewares/auth";
+
 const challengeRouter = express.Router();
 
 challengeRouter.get(
@@ -68,6 +70,7 @@ challengeRouter.get(
 
 challengeRouter.post(
   "/",
+  AuthJWT,
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await PostChallenge(req);
     res.status(status);
@@ -77,6 +80,7 @@ challengeRouter.post(
 
 challengeRouter.put(
   "/:id",
+  AuthJWT,
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await PutChallenge(Number(req.params.id), req);
     res.status(status);
@@ -86,6 +90,7 @@ challengeRouter.put(
 
 challengeRouter.delete(
   "/:id",
+  AuthJWT,
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await DeleteChallenge(Number(req.params.id));
     res.status(status);
