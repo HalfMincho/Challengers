@@ -14,7 +14,12 @@ const accountRouter = express.Router();
 accountRouter.post(
   "/register-token",
   async (req: express.Request, res: express.Response) => {
-    const registerToken = (await GenerateRegisterToken(req)) as string;
+    const registerToken = await GenerateRegisterToken(req);
+
+    if (typeof registerToken !== "string") {
+      res.status(409);
+      res.send({ error: "email_already_exists" });
+    }
 
     if (!registerToken) {
       res.status(500);
