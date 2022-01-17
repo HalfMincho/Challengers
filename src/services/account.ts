@@ -384,3 +384,30 @@ export const TokenRefresh = async (req: express.Request) => {
     };
   }
 };
+
+export const ModifyUsername = async (req: express.Request) => {
+  const { body }: { body: { name: string; email: string } } = req;
+
+  if (typeof body.name !== "string" || body.name.length <= 0) {
+    return { status: 400, result: { error: "no_required_args" } };
+  }
+
+  try {
+    await (await pool.getConnection()).beginTransaction();
+
+    await pool.execute(
+      `UPDATE account SET name=? WHERE email="${body.email}"`,
+      [body.name],
+    );
+
+    await (await pool.getConnection()).commit();
+
+    return { status: 200, result: { success: "modified" } };
+  } catch (e) {
+    await (await pool.getConnection()).rollback();
+
+    console.error(e);
+
+    return { status: 500, result: { error: "exception_occurred" } };
+  }
+};
