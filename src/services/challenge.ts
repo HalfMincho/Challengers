@@ -88,10 +88,12 @@ export const GetPopularChallenge = async (count: number) => {
         ).replace(/-/gi, "")}")`,
       )) as Array<Array<CategoryFromDB>>;
 
+      const username = await GetNameFromUUID(challenge.submitter);
+
       return {
         ...challenge,
         category: category[0].name,
-        submitter: uuidStringify(challenge["submitter"]),
+        submitter: username,
       };
     }),
   );
@@ -117,10 +119,12 @@ export const GetRecentChallenge = async (count: number) => {
         ).replace(/-/gi, "")}")`,
       )) as Array<Array<CategoryFromDB>>;
 
+      const username = await GetNameFromUUID(challenge.submitter);
+
       return {
         ...challenge,
         category: category[0].name,
-        submitter: uuidStringify(challenge["submitter"]),
+        submitter: username,
       };
     }),
   );
@@ -344,10 +348,12 @@ export const GetChallengeWithTitle = async (keyword: string, count: number) => {
         ).replace(/-/gi, "")}")`,
       )) as Array<Array<CategoryFromDB>>;
 
+      const username = await GetNameFromUUID(challenge.submitter);
+
       return {
         ...challenge,
         category: category[0].name,
-        submitter: uuidStringify(challenge["submitter"]),
+        submitter: username,
       };
     }),
   );
@@ -394,10 +400,12 @@ export const GetChallengeWithCategory = async (
         ).replace(/-/gi, "")}")`,
       )) as Array<Array<CategoryFromDB>>;
 
+      const username = await GetNameFromUUID(challenge.submitter);
+
       return {
         ...challenge,
         category: category[0].name,
-        submitter: uuidStringify(challenge["submitter"]),
+        submitter: username,
       };
     }),
   );
