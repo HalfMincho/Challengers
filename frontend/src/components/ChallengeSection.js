@@ -28,44 +28,32 @@ const Section = styled.div`
   }
 
   .cardContainer {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    justify-items: center;
+    row-gap: 50px;
+    column-gap: 10px;
   }
 `;
 
-const showChallengeCards = (data) => {
-  if (data) {
-    const arrayData = data.map((item, index) => {
-      return (
-        <ChallengeCard
-          auth_count_in_day={item.auth_count_in_day}
-          auth_day={item.auth_day}
-          id={item.id}
-          key={index}
-          name={item.name}
-          start_at={item.start_at}
-        />
-      );
-    });
-
-    return arrayData;
-  }
-};
-
 const ChallengeSection = ({ number, preview, title, type }) => {
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await axios.get(`/challenge/${type}?count=${number}`).then((res) => setData(res.data));
+        setLoading(true);
+        const response = await axios.get(`/challenge/${type}?count=${number}`);
+        setData(response.data);
       } catch (e) {
         console.log(e);
       }
+      setLoading(false);
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -79,7 +67,19 @@ const ChallengeSection = ({ number, preview, title, type }) => {
             </span>
           )}
         </p>
-        <div className="cardContainer">{showChallengeCards(data)}</div>
+        <div className="cardContainer">
+          {data &&
+            data.map((item, index) => (
+              <ChallengeCard
+                auth_count_in_day={item.auth_count_in_day}
+                auth_day={item.auth_day}
+                id={item.id}
+                key={index}
+                name={item.name}
+                start_at={item.start_at}
+              />
+            ))}
+        </div>
       </Section>
     </>
   );

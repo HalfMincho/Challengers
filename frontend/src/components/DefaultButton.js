@@ -1,15 +1,17 @@
 import React from 'react';
-import Button from '@mui/material/Button';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from '../styles/theme';
+import styled from 'styled-components';
+
+const Button = styled.div`
+  width: 5em;
+  height: 5em;
+  background: ${(props) => props.color};
+`;
 
 const DefaultButton = ({ color, size, text, variant }) => {
   return (
-    <ThemeProvider theme={theme}>
-      <Button color={color} size={size} variant={variant}>
-        {text}
-      </Button>
-    </ThemeProvider>
+    <Button color={color} size={size} variant={variant}>
+      {text}
+    </Button>
   );
 };
 
