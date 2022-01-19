@@ -6,8 +6,6 @@ import { Validate } from "./middlewares/validation";
 
 import {
   Category,
-  CategoryFromDB,
-  Challenge,
   ChallengeFromDB,
   ChallengeFromRequest,
 } from "./../types/challenge";
@@ -37,17 +35,17 @@ export const GetChallenge = async (id: number) => {
 
   const refinedRow = await Promise.all(
     row.map(async (challenge: ChallengeFromDB) => {
-      const [category] = (await pool.execute(
+      const [[{ name: categoryName }]] = (await pool.execute(
         `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
           challenge.category,
         ).replace(/-/gi, "")}")`,
-      )) as Array<Array<CategoryFromDB>>;
+      )) as unknown as [[{ name: string }]];
 
       const username = await GetNameFromUUID(challenge.submitter);
 
       return {
         ...challenge,
-        category: category[0].name,
+        category: categoryName,
         submitter: username,
       };
     }),
@@ -82,17 +80,17 @@ export const GetPopularChallenge = async (count: number) => {
 
   const refinedRows = await Promise.all(
     rows.map(async (challenge: ChallengeFromDB) => {
-      const [category] = (await pool.execute(
+      const [[{ name: categoryName }]] = (await pool.execute(
         `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
           challenge.category,
         ).replace(/-/gi, "")}")`,
-      )) as Array<Array<CategoryFromDB>>;
+      )) as unknown as [[{ name: string }]];
 
       const username = await GetNameFromUUID(challenge.submitter);
 
       return {
         ...challenge,
-        category: category[0].name,
+        category: categoryName,
         submitter: username,
       };
     }),
@@ -113,17 +111,17 @@ export const GetRecentChallenge = async (count: number) => {
 
   const refinedRows = await Promise.all(
     rows.map(async (challenge: ChallengeFromDB) => {
-      const [category] = (await pool.execute(
+      const [[{ name: categoryName }]] = (await pool.execute(
         `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
           challenge.category,
         ).replace(/-/gi, "")}")`,
-      )) as Array<Array<CategoryFromDB>>;
+      )) as unknown as [[{ name: string }]];
 
       const username = await GetNameFromUUID(challenge.submitter);
 
       return {
         ...challenge,
-        category: category[0].name,
+        category: categoryName,
         submitter: username,
       };
     }),
@@ -160,9 +158,9 @@ export const PostChallenge = async (req: express.Request) => {
     return { status: 400, result: { error: "no_required_args" } };
   }
 
-  const categoryUUID = (await pool.execute(
+  const [[{ uuid: categoryUUID }]] = (await pool.execute(
     `SELECT uuid FROM category WHERE name="${body.category}"`,
-  )) as [categoryUUID: any[], field: unknown];
+  )) as unknown as [[{ uuid: Buffer }]];
 
   const [[{ uuid: userUUID }]] = (await pool.execute(
     `SELECT uuid FROM account WHERE email="${body.email}"`,
@@ -171,7 +169,7 @@ export const PostChallenge = async (req: express.Request) => {
   const params = [
     challengeUUID,
     userUUID,
-    categoryUUID[0][0].uuid,
+    categoryUUID,
     body.name,
     body.auth_way,
     body.auth_day,
@@ -248,12 +246,12 @@ export const PutChallenge = async (id: number, req: express.Request) => {
     return { status: 400, result: { error: "no_required_args" } };
   }
 
-  const categoryUUID = (await pool.execute(
+  const [[{ uuid: categoryUUID }]] = (await pool.execute(
     `SELECT uuid FROM category WHERE name="${body.category}"`,
-  )) as [categoryUUID: any[], field: unknown];
+  )) as unknown as [[{ uuid: Buffer }]];
 
   const params = [
-    categoryUUID[0][0].uuid,
+    categoryUUID,
     body.name,
     body.auth_way,
     body.auth_day,
@@ -342,17 +340,17 @@ export const GetChallengeWithTitle = async (keyword: string, count: number) => {
 
   const refinedRows = await Promise.all(
     rows.map(async (challenge: ChallengeFromDB) => {
-      const [category] = (await pool.execute(
+      const [[{ name: categoryName }]] = (await pool.execute(
         `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
           challenge.category,
         ).replace(/-/gi, "")}")`,
-      )) as Array<Array<CategoryFromDB>>;
+      )) as unknown as [[{ name: string }]];
 
       const username = await GetNameFromUUID(challenge.submitter);
 
       return {
         ...challenge,
-        category: category[0].name,
+        category: categoryName,
         submitter: username,
       };
     }),
@@ -379,14 +377,14 @@ export const GetChallengeWithCategory = async (
     return { status: 400, result: { error: "invalid_query_params" } };
   }
 
-  const categoryUUID = (await pool.execute(
+  const [[{ uuid: categoryUUID }]] = (await pool.execute(
     `SELECT uuid FROM category WHERE name="${categoryFromReq}"`,
-  )) as [categoryUUID: any[], field: unknown];
+  )) as unknown as [[{ uuid: Buffer }]];
 
   const [rows] = (await pool.execute(
     `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
     start_at, end_at, cost, description, reg_date, views FROM challenge
-    WHERE category=UNHEX("${uuidStringify(categoryUUID[0][0].uuid).replace(
+    WHERE category=UNHEX("${uuidStringify(categoryUUID).replace(
       /-/gi,
       "",
     )}") ORDER BY views desc LIMIT 0, ${count}`,
@@ -394,17 +392,17 @@ export const GetChallengeWithCategory = async (
 
   const refinedRows = await Promise.all(
     rows.map(async (challenge: ChallengeFromDB) => {
-      const [category] = (await pool.execute(
+      const [[{ name: categoryName }]] = (await pool.execute(
         `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
           challenge.category,
         ).replace(/-/gi, "")}")`,
-      )) as Array<Array<CategoryFromDB>>;
+      )) as unknown as [[{ name: string }]];
 
       const username = await GetNameFromUUID(challenge.submitter);
 
       return {
         ...challenge,
-        category: category[0].name,
+        category: categoryName,
         submitter: username,
       };
     }),
