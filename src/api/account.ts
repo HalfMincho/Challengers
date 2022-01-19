@@ -5,7 +5,6 @@ import {
   TokenRefresh,
   Login,
   Register,
-  SendRegisterMail,
   VerifyRegisterToken,
   ModifyUsername,
 } from "../services/account";
@@ -16,23 +15,9 @@ const accountRouter = express.Router();
 accountRouter.post(
   "/register-token",
   async (req: express.Request, res: express.Response) => {
-    const registerToken = await GenerateRegisterToken(req);
-
-    if (typeof registerToken !== "string") {
-      res.status(409);
-      res.send({ error: "email_already_exists" });
-    }
-
-    if (!registerToken) {
-      res.status(500);
-      res.send({ error: "exception_occurred" });
-    }
-
-    if (typeof registerToken === "string") {
-      const { status, result } = await SendRegisterMail(req, registerToken);
-      res.status(status);
-      res.send(result);
-    }
+    const { status, result } = await GenerateRegisterToken(req);
+    res.status(status);
+    res.send(result);
   },
 );
 

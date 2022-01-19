@@ -108,10 +108,11 @@ export const GenerateRegisterToken = async (req: express.Request) => {
       `INSERT INTO mail_verification (token, email) VALUE (?, ?)`,
       [token, body.email],
     );
-    return token;
+
+    return await SendRegisterMail(req, token);
   } catch (e) {
     console.error(e);
-    return false;
+    return { status: 500, result: { error: "exception_occurred" } };
   }
 };
 
