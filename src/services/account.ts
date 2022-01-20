@@ -412,3 +412,57 @@ export const ModifyUsername = async (req: express.Request) => {
     return { status: 500, result: { error: "exception_occurred" } };
   }
 };
+
+export const ModifyPassword = async (req: express.Request) => {
+  const {
+    body,
+  }: { body: { password: string; newPassword: string; email: string } } = req;
+
+  const [[{ password }]] = (await pool.execute(
+    `SELECT password FROM account WHERE email LIKE "${body.email}"`,
+  )) as [row: any[], field: unknown];
+
+  const hashedPassword = crypto
+    .createHash("sha512")
+    .update(body.password)
+    .digest("hex");
+
+  if (password !== hashedPassword) {
+    return { status: 403, result: { error: "authentication_failed" } };
+  } else {
+    const validatePassword = (content: string) => {
+      const passwordRegex =
+        // eslint-disable-next-line no-useless-escape
+        /^([\x21-\x7e]{8,})$/;
+      return passwordRegex.test(content);
+    };
+
+    if (!validatePassword(body.newPassword)) {
+      return { status: 400, result: { error: "password_policy_mismatch" } };
+    }
+
+    const newHashedPassword = crypto
+      .createHash("sha512")
+      .update(body.newPassword)
+      .digest("hex");
+
+    try {
+      await (await pool.getConnection()).beginTransaction();
+
+      await pool.execute(
+        `UPDATE account SET password=? WHERE email="${body.email}"`,
+        [newHashedPassword],
+      );
+
+      await (await pool.getConnection()).commit();
+
+      return { status: 200, result: { success: "modified" } };
+    } catch (e) {
+      await (await pool.getConnection()).rollback();
+
+      console.error(e);
+
+      return { status: 500, result: { error: "exception_occurred" } };
+    }
+  }
+};

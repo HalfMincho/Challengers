@@ -7,6 +7,7 @@ import {
   Register,
   VerifyRegisterToken,
   ModifyUsername,
+  ModifyPassword,
 } from "../services/account";
 import { AuthJWT } from "../services/middlewares/auth";
 
@@ -58,10 +59,20 @@ accountRouter.get(
 );
 
 accountRouter.put(
-  "/",
+  "/user/name",
   AuthJWT,
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await ModifyUsername(req);
+    res.status(status);
+    res.send(result);
+  },
+);
+
+accountRouter.put(
+  "/user/password",
+  AuthJWT,
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await ModifyPassword(req);
     res.status(status);
     res.send(result);
   },
