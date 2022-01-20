@@ -28,7 +28,8 @@ export const GetChallenge = async (id: number) => {
 
   const [row] =
     (await pool.execute(`SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
-  start_at, end_at, cost, description, reg_date, views FROM challenge WHERE id=${id}`)) as [
+    auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
+    start_at, end_at, cost, description, reg_date, views FROM challenge WHERE id=${id}`)) as [
       row: ChallengeFromDB[],
       field: unknown,
     ];
@@ -74,7 +75,9 @@ export const GetPopularChallenge = async (count: number) => {
   }
 
   const [rows] = (await pool.execute(
-    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description, reg_date, views
+    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+    auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
+    start_at, end_at, cost, description, reg_date, views
     FROM challenge ORDER BY views desc LIMIT 0, ${count}`,
   )) as [rows: ChallengeFromDB[], field: unknown];
 
@@ -105,7 +108,9 @@ export const GetRecentChallenge = async (count: number) => {
   }
 
   const [rows] = (await pool.execute(
-    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description, reg_date, views
+    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+    auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
+    start_at, end_at, cost, description, reg_date, views
     FROM challenge ORDER BY reg_date desc LIMIT 0, ${count}`,
   )) as [rows: ChallengeFromDB[], field: unknown];
 
@@ -174,6 +179,9 @@ export const PostChallenge = async (req: express.Request) => {
     body.auth_way,
     body.auth_day,
     body.auth_count_in_day,
+    body.auth_start_time,
+    body.auth_end_time,
+    body.can_auth_all_time,
     body.start_at,
     body.end_at,
     body.cost,
@@ -185,8 +193,9 @@ export const PostChallenge = async (req: express.Request) => {
 
     await pool.execute(
       `INSERT INTO challenge (uuid, submitter, category, name,
-      auth_way, auth_day, auth_count_in_day, start_at, end_at, cost, description)
-    VALUE (?,?,?,?,?,?,?,?,?,?,?)`,
+      auth_way, auth_day, auth_count_in_day, auth_start_time,
+      auth_end_time, can_auth_all_time, start_at, end_at, cost, description)
+    VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       params,
     );
 
@@ -256,6 +265,9 @@ export const PutChallenge = async (id: number, req: express.Request) => {
     body.auth_way,
     body.auth_day,
     body.auth_count_in_day,
+    body.auth_start_time,
+    body.auth_end_time,
+    body.can_auth_all_time,
     body.start_at,
     body.end_at,
     body.cost,
@@ -267,7 +279,8 @@ export const PutChallenge = async (id: number, req: express.Request) => {
 
     await pool.execute(
       `UPDATE challenge SET category=?, name=?, auth_way=?, auth_day=?,
-      auth_count_in_day=?, start_at=?, end_at=?, cost=?, description=? WHERE id=${id}`,
+      auth_count_in_day=?, auth_start_time=?, auth_end_time=?, can_auth_all_time=?,
+      start_at=?, end_at=?, cost=?, description=? WHERE id=${id}`,
       [
         params[0],
         params[1],
@@ -278,6 +291,9 @@ export const PutChallenge = async (id: number, req: express.Request) => {
         params[6],
         params[7],
         params[8],
+        params[9],
+        params[10],
+        params[11],
       ],
     );
 
@@ -334,6 +350,7 @@ export const GetChallengeWithTitle = async (keyword: string, count: number) => {
 
   const [rows] = (await pool.execute(
     `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+    auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
     start_at, end_at, cost, description, reg_date, views FROM challenge
     WHERE name LIKE "%${keyword}%" ORDER BY views desc LIMIT 0, ${count}`,
   )) as [rows: ChallengeFromDB[], field: unknown];
@@ -383,6 +400,7 @@ export const GetChallengeWithCategory = async (
 
   const [rows] = (await pool.execute(
     `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+    auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
     start_at, end_at, cost, description, reg_date, views FROM challenge
     WHERE category=UNHEX("${uuidStringify(categoryUUID).replace(
       /-/gi,

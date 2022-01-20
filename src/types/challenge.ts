@@ -1,21 +1,5 @@
 import { category } from "./const";
 
-export type Challenge = {
-  id: number;
-  submitter: string;
-  category: Category;
-  name: string;
-  auth_way: string;
-  auth_day: string;
-  auth_count_in_day: number;
-  start_at: Date;
-  end_at: Date;
-  cost: number;
-  description: string;
-  reg_date: Date;
-  views: number;
-};
-
 export type ChallengeFromRequest = {
   id: number;
   submitter: string;
@@ -24,6 +8,9 @@ export type ChallengeFromRequest = {
   auth_way: string;
   auth_day: string;
   auth_count_in_day: number;
+  auth_start_time: string;
+  auth_end_time: string;
+  can_auth_all_time: boolean;
   start_at: string;
   end_at: string;
   cost: number;
@@ -41,6 +28,9 @@ export type ChallengeFromDB = {
   auth_way: string;
   auth_day: string;
   auth_count_in_day: number;
+  auth_start_time: string;
+  auth_end_time: string;
+  can_auth_all_time: boolean;
   start_at: string;
   end_at: string;
   cost: number;
