@@ -20,7 +20,9 @@
     "react/prop-types": ["off"],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
-    "react/jsx-sort-props": ["warn", { "ignoreCase": false }],
-    "no-unused-vars": "warn"
-  }
+    "react/jsx-sort-props": ["off"],
+    "no-unused-vars": "warn",
+    "react/react-in-jsx-scope": "off"
+  },
+  "parser": "babel-eslint"
 }
