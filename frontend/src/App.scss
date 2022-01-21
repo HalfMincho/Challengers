@@ -1,0 +1,8 @@
+@import 'styles/base';
+
+.App {
+  background-color: $bg-white;
+  display: flex;
+  flex: 1;
+  overflow: auto;
+}
