@@ -1,0 +1,21 @@
+@font-face {
+  font-family: 'Noto Sans CJK KR';
+  font-weight: 400;
+  src:
+        /* IE6-IE8 */ url('NotoSansKR-Regular.otf') format('embedded-opentype'),
+    /* Super Modern Browsers */ url('NotoSansKR-Regular.otf') format('woff2'),
+    /* Modern Browsers */ url('NotoSansKR-Regular.otf') format('woff'),
+    /* Safari, Android, iOS */ url('NotoSansKR-Regular.otf') format('truetype'),
+    /* Legacy iOS */ url('NotoSansKR-Regular.otf') format('svg');
+}
+
+@font-face {
+  font-family: 'Noto Sans CJK KR';
+  font-weight: 500;
+  src:
+        /* IE6-IE8 */ url('NotoSansKR-Medium.otf') format('embedded-opentype'),
+    /* Super Modern Browsers */ url('NotoSansKR-Medium.otf') format('woff2'),
+    /* Modern Browsers */ url('NotoSansKR-Medium.otf') format('woff'),
+    /* Safari, Android, iOS */ url('NotoSansKR-Medium.otf') format('truetype'),
+    /* Legacy iOS */ url('NotoSansKR-Medium.otf') format('svg');
+}
