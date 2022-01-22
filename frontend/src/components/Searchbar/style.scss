@@ -1,0 +1,21 @@
+@import '../../common/styles/base';
+
+.searchbar__container {
+  input {
+    width: 12rem;
+    height: 2rem;
+    background-color: #f8f8fa;
+    border: none;
+    border-radius: 5px;
+    padding: 0 30px 0 10px;
+    &:focus {
+      outline: none;
+    }
+  }
+  svg {
+    position: relative;
+    right: 25px;
+    bottom: -2px;
+    cursor: pointer;
+  }
+}

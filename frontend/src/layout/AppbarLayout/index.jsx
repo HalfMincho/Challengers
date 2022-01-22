@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Button from '../../components/Button';
+import Searchbar from '../../components/Searchbar';
 
 import './style.scss';
 
@@ -27,6 +28,7 @@ export default function AppbarLayout({ children }) {
         {category.map((name, index) => (
           <AppbarContainerLink category={name} key={index} />
         ))}
+        <Searchbar />
         <div className="appbar__container--buttons">
           <Button color="gray" outline>
             회원가입

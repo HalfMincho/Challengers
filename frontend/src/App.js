@@ -8,11 +8,7 @@ const ChallengeDetail = lazy(() => import('./pages/ChallengeDetailPage'));
 
 function App() {
   return (
-    <Suspense
-      fallback={
-        <div style={{ height: '100vh', color: 'white', background: '#1c2137' }}>loading...</div>
-      }
-    >
+    <Suspense fallback={<div style={{ height: '100vh', color: 'black' }}>loading...</div>}>
       <div className="App">
         <Routes>
           <Route element={<Main />} path="/" />
