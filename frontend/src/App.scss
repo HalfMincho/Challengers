@@ -9,8 +9,9 @@
 
 a {
   text-decoration: none;
-}
-a:link,
-a:visited {
-  color: black;
+
+  &:link,
+  &:visited {
+    color: black;
+  }
 }

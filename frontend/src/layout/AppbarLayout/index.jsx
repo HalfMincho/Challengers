@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import logo_appbar from '../../common/assets/logo.png';
+import Button from '../../components/Button';
 
 import './style.scss';
 
@@ -21,12 +21,18 @@ export default function AppbarLayout({ children }) {
       <div className="appbar__container">
         <div className="appbar__container--logo">
           <Link className="appbar__link" to="/">
-            <img alt="logo" src={logo_appbar} height={58} width={260} />
+            <img alt="logo" src="/assets/logo_appbar.png" height={58} width={260} />
           </Link>
         </div>
         {category.map((name, index) => (
           <AppbarContainerLink category={name} key={index} />
         ))}
+        <div className="appbar__container--buttons">
+          <Button color="gray" outline>
+            회원가입
+          </Button>
+          <Button>로그인</Button>
+        </div>
       </div>
       <div className="layout__content--root">{children}</div>
       <div className="footer__space"></div>
