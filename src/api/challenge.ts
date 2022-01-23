@@ -9,6 +9,7 @@ import {
   DeleteChallenge,
   GetChallengeWithTitle,
   GetChallengeWithCategory,
+  GetOpenChallenge,
 } from "../services/challenge";
 import { Category } from "../types/challenge";
 
@@ -54,6 +55,16 @@ challengeRouter.get(
     const { status, result } = await GetRecentChallenge(
       Number(req.query.count),
     );
+    res.status(status);
+    res.send(result);
+  },
+);
+
+challengeRouter.get(
+  "/open",
+  AuthJWT,
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await GetOpenChallenge(req);
     res.status(status);
     res.send(result);
   },
