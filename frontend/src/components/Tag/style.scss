@@ -1,0 +1,11 @@
+@import '../../common/styles/base';
+
+.Tag {
+  background: $bg-gray;
+  padding: 3px 5px;
+  border-radius: 5px;
+
+  & + & {
+    margin-left: 10px;
+  }
+}

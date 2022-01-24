@@ -9,7 +9,7 @@ const category = ['건강', '역량', '정서', '자산', '생활', '취미'];
 function AppbarContainerLink({ category }) {
   return (
     <div className="appbar__container--link">
-      <Link className="appbar__link" to={`/category/${category}`}>
+      <Link className="appbar__link" to={`/list/category/${category}`}>
         {category}
       </Link>
     </div>

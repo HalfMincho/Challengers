@@ -12,10 +12,11 @@
       outline: none;
     }
   }
-  svg {
+  button {
     position: relative;
-    right: 25px;
+    right: 30px;
     bottom: -2px;
+    width: 3px;
     cursor: pointer;
   }
 }

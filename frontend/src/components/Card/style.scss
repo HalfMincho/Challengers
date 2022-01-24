@@ -1,0 +1,22 @@
+@import '../../common/styles/base';
+
+.Card {
+  width: 265px;
+  height: 300px;
+  margin: 0.7rem;
+  padding: 1rem;
+  border: 1px solid $line-gray;
+  border-radius: 5px;
+  box-shadow: 1px 1px 1px $line-gray;
+  cursor: pointer;
+
+  div {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .name {
+    font-weight: 500;
+    font-size: 1.1rem;
+  }
+}
