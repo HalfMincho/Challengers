@@ -1,12 +1,15 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Card from '../Card';
 import './style.scss';
 
-export default function CardList({ type, keyword, category, preview }) {
+export default function CardList({ type, preview }) {
   const [data, setData] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const search = location.search;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -15,12 +18,10 @@ export default function CardList({ type, keyword, category, preview }) {
 
         let url = '';
         if (type === 'recent' || type === 'popular') {
-          if (preview) url = `/challenge/${type}?count=4`;
-          else url = `/challenge/${type}`;
-        } else if (type === 'category') {
-          url = `/challenge/search?category=${category}`;
+          url = `/challenge/${type}`;
+          if (preview) url += '?count=4';
         } else {
-          url = `/challenge/search?keyword=${keyword}`;
+          url = `/challenge/search${search}`;
         }
 
         const response = await axios.get(url);

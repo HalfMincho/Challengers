@@ -1,32 +1,37 @@
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import CardList from '../../components/CardList';
 import AppbarLayout from '../../layout/AppbarLayout';
 import './style.scss';
 
 export default function ListPage() {
-  const { type, subcategory } = useParams();
+  const { type } = useParams();
+  const location = useLocation();
+  const search = location.search;
 
-  let title = '',
-    keyword = '';
+  const params = new URLSearchParams(search);
+  const keyword = params.get('keyword');
+  const category = params.get('category');
+
+  let title = '';
   switch (type) {
-    case 'recent':
-      title = '신규 챌린지';
-      break;
     case 'popular':
       title = '인기 챌린지';
       break;
-    case 'category':
-      title = `${subcategory} 챌린지`;
+    case 'recent':
+      title = '신규 챌린지';
+      break;
+    case 'search':
+      if (keyword) title = `${keyword} 관련 챌린지`;
+      else if (category) title = `${category} 챌린지`;
       break;
     default:
-      keyword = type;
-      title = `${keyword} 관련 챌린지`;
+      console.log('TypeError');
   }
 
   return (
     <AppbarLayout>
       <p className="listTitle">{title}</p>
-      <CardList type={type} keyword={keyword} category={subcategory} />
+      <CardList type={type} />
     </AppbarLayout>
   );
 }

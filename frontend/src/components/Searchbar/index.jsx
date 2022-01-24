@@ -8,7 +8,7 @@ export default function Searchbar() {
   const navigate = useNavigate();
 
   const goResult = () => {
-    navigate(`/list/${keyword}`);
+    navigate(`/list/search?keyword=${keyword}`);
     location.reload();
   };
 

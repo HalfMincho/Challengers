@@ -11,7 +11,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route element={<Main />} path="/" />
-          <Route element={<List />} path="/list/:type/" />
+          <Route element={<List />} path="/list/:type" />
         </Routes>
       </div>
     </Suspense>
