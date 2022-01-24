@@ -1,0 +1,16 @@
+@import '../../common/styles/base';
+
+.listTitle {
+  display: flex;
+  align-items: center;
+
+  p {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-left: 10px;
+  }
+  svg {
+    margin: 5px 0 0 5px;
+    cursor: pointer;
+  }
+}

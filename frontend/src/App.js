@@ -3,8 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import './App.scss';
 
 const Main = lazy(() => import('./pages/MainPage'));
-const ChallengeList = lazy(() => import('./pages/ChallengeListPage'));
-const ChallengeDetail = lazy(() => import('./pages/ChallengeDetailPage'));
+const List = lazy(() => import('./pages/ListPage'));
 
 function App() {
   return (
@@ -12,9 +11,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route element={<Main />} path="/" />
-          <Route element={<ChallengeList />} path="/popular" />
-          <Route element={<ChallengeList />} path="/recent" />
-          <Route element={<ChallengeDetail />} path="/challenge/detail/:id" />
+          <Route element={<List />} path="/list/:type/" />
         </Routes>
       </div>
     </Suspense>
