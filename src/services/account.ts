@@ -277,9 +277,9 @@ export const Login = async (req: express.Request) => {
     return { status: 400, result: { error: "no_required_args" } };
   }
 
-  const [[{ password }]] = (await pool.execute(
+  const [password] = (await pool.execute(
     `SELECT password FROM account WHERE email LIKE "${body.email}"`,
-  )) as [row: any[], field: unknown];
+  )) as [password: any[], field: unknown];
 
   if (password === undefined || password.length === 0) {
     return { status: 403, result: { error: "authentication_failed" } };
@@ -290,7 +290,7 @@ export const Login = async (req: express.Request) => {
     .update(body.password)
     .digest("hex");
 
-  if (hashedPassword !== password) {
+  if (hashedPassword !== password[0].password) {
     return { status: 403, result: { error: "authentication_failed" } };
   } else {
     const [[{ "COUNT(*)": expiredRefreshTokenCount }]] = (await pool.execute(
@@ -420,7 +420,7 @@ export const ModifyPassword = async (req: express.Request) => {
 
   const [[{ password }]] = (await pool.execute(
     `SELECT password FROM account WHERE email LIKE "${body.email}"`,
-  )) as [row: any[], field: unknown];
+  )) as [password: any, field: unknown];
 
   const hashedPassword = crypto
     .createHash("sha512")
