@@ -1,0 +1,25 @@
+@import '../../common/styles/base';
+
+.container {
+  margin: 20px 150px;
+
+  section {
+    margin: 20px 0;
+  }
+
+  .views {
+    color: $font-gray;
+    font-size: 0.9rem;
+  }
+  .startDiv {
+    display: flex;
+    justify-content: space-between;
+  }
+  .name {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+  .Tag {
+    font-size: 0.9rem;
+  }
+}
