@@ -1,0 +1,22 @@
+@import '../../common/styles/base';
+
+.Box {
+  display: flex;
+  width: fit-content;
+  padding: 10px 20px;
+  white-space: pre-line;
+  border-radius: 5px;
+
+  .bold {
+    font-weight: 500;
+  }
+
+  div + div {
+    margin-left: 25px;
+  }
+
+  &.gray {
+    background-color: $bg-gray;
+    color: $font-black;
+  }
+}
