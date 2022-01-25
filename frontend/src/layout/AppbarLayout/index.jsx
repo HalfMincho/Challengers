@@ -4,8 +4,6 @@ import Searchbar from '../../components/Searchbar';
 
 import './style.scss';
 
-const category = ['건강', '역량', '정서', '자산', '생활', '취미'];
-
 function AppbarContainerLink({ category, onClick }) {
   return (
     <div className="appbar__container--link" onClick={onClick}>
@@ -16,6 +14,7 @@ function AppbarContainerLink({ category, onClick }) {
 
 export default function AppbarLayout({ children }) {
   const navigate = useNavigate();
+  const category = ['건강', '역량', '정서', '자산', '생활', '취미'];
 
   const goResult = (name) => {
     navigate(`/list/search?category=${name}`);
