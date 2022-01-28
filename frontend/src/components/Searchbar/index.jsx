@@ -29,7 +29,7 @@ export default function Searchbar() {
         onKeyPress={handleKeyPress}
         className="searchbar__input"
         placeholder="검색어를 입력하세요"
-      ></input>
+      />
       <button onClick={goResult}>
         <FaSearch />
       </button>

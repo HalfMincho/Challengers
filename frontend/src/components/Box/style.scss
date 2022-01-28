@@ -6,6 +6,7 @@
   padding: 10px 20px;
   white-space: pre-line;
   border-radius: 5px;
+  color: $font-black;
 
   .bold {
     font-weight: 500;
@@ -17,6 +18,14 @@
 
   &.gray {
     background-color: $bg-gray;
-    color: $font-black;
+  }
+  &.brand {
+    background-color: $bg-brand;
+    border: $brand;
+  }
+
+  &.fullWidth {
+    width: 100%;
+    justify-content: center;
   }
 }
