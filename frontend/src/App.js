@@ -5,6 +5,7 @@ import './App.scss';
 const Main = lazy(() => import('./pages/MainPage'));
 const List = lazy(() => import('./pages/ListPage'));
 const Detail = lazy(() => import('./pages/DetailPage'));
+const Open = lazy(() => import('./pages/OpenPage'));
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route element={<Main />} path="/" />
           <Route element={<List />} path="/list/:type" />
           <Route element={<Detail />} path="/detail/:id" />
+          <Route element={<Open />} path="/open" />
         </Routes>
       </div>
     </Suspense>
