@@ -1,5 +1,5 @@
 import CardList from '../../components/CardList';
-import AppbarLayout from '../../layout/AppbarLayout';
+import AppbarLayout from '../../layouts/AppbarLayout';
 import { FaChevronRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import './style.scss';

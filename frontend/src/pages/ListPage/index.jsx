@@ -1,6 +1,6 @@
 import { useLocation, useParams } from 'react-router-dom';
 import CardList from '../../components/CardList';
-import AppbarLayout from '../../layout/AppbarLayout';
+import AppbarLayout from '../../layouts/AppbarLayout';
 import './style.scss';
 
 export default function ListPage() {

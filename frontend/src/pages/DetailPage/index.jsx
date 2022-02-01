@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
-import AppbarLayout from '../../layout/AppbarLayout';
+import AppbarLayout from '../../layouts/AppbarLayout';
 import Tag from '../../components/Tag';
 import Button from '../../components/Button';
 import Box from '../../components/Box';
