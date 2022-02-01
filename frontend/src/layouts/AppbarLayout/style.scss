@@ -18,25 +18,13 @@
       height: 30px;
     }
 
-    .appbar__conatiner--link {
-      display: flex;
-      align-items: center;
-      flex-basis: 490px;
-
-      .appbar__link {
-        font-size: 20px;
-        line-height: 23px;
-        text-decoration: none;
-        padding: 1rem;
-        flex: 1;
-        text-align: center;
-      }
+    .appbar__link {
+      cursor: pointer;
     }
   }
 
   .layout__content--root {
-    flex: 1;
-    display: flex;
+    margin: 1rem;
   }
 
   .footer__space {

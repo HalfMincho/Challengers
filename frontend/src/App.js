@@ -3,22 +3,19 @@ import { Route, Routes } from 'react-router-dom';
 import './App.scss';
 
 const Main = lazy(() => import('./pages/MainPage'));
-const ChallengeList = lazy(() => import('./pages/ChallengeListPage'));
-const ChallengeDetail = lazy(() => import('./pages/ChallengeDetailPage'));
+const List = lazy(() => import('./pages/ListPage'));
+const Detail = lazy(() => import('./pages/DetailPage'));
+const Create = lazy(() => import('./pages/CreatePage'));
 
 function App() {
   return (
-    <Suspense
-      fallback={
-        <div style={{ height: '100vh', color: 'white', background: '#1c2137' }}>loading...</div>
-      }
-    >
+    <Suspense fallback={<div style={{ height: '100vh', color: 'black' }}>loading...</div>}>
       <div className="App">
         <Routes>
           <Route element={<Main />} path="/" />
-          <Route element={<ChallengeList />} path="/popular" />
-          <Route element={<ChallengeList />} path="/recent" />
-          <Route element={<ChallengeDetail />} path="/challenge/detail/:id" />
+          <Route element={<List />} path="/list/:type" />
+          <Route element={<Detail />} path="/detail/:id" />
+          <Route element={<Create />} path="/create" />
         </Routes>
       </div>
     </Suspense>
