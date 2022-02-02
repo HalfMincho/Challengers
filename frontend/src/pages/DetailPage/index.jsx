@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
-import AppbarLayout from '../../layouts/AppbarLayout';
-import Tag from '../../components/Tag';
-import Button from '../../components/Button';
-import Box from '../../components/Box';
-import Paragraph from '../../components/Paragraph';
+import AppbarLayout from '@layouts/AppbarLayout';
+import Tag from '@components/Tag';
+import Button from '@components/Button';
+import Box from '@components/Box';
+import Paragraph from '@components/Paragraph';
 
 import './style.scss';
 
@@ -51,7 +51,7 @@ export default function DetailPage() {
           <Paragraph>
             {[
               '챌린지 진행 시 꼭 알아주세요!',
-              `1. O주 동안 주 O일, 하루에 ${data.auth_count_in_day}번 인증샷을 업로드하셔야 합니다.\n2. 인증 가능한 요일은 ${data.auth_day}입니다.\n 3. 인증 가능 시간은 ${data.auth_start_time}부터 ${data.auth_end_time}입니다.`,
+              `1. O주 동안 주 O일, 하루에 ${data.auth_count_in_day}번 인증샷을 업로드하셔야 합니다.\n2. 인증 가능한 요일은 ${data.auth_day}입니다.\n3. 인증 가능 시간은 ${data.auth_start_time}부터 ${data.auth_end_time}입니다.`,
             ]}
           </Paragraph>
           <Paragraph>{['인증 방법 및 주의사항', data.auth_way]}</Paragraph>

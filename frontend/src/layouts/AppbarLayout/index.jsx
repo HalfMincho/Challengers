@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import Button from '../../components/Button';
-import Searchbar from '../../components/Searchbar';
-
+import Button from '@components/Button';
+import Searchbar from '@components/Searchbar';
 import './style.scss';
 
 function AppbarContainerLink({ category, onClick }) {

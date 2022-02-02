@@ -1,4 +1,4 @@
-@import '../../common/styles/base';
+@import '@common/styles/base';
 
 @mixin button-color($color) {
   background: $color;

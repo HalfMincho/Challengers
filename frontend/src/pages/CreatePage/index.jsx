@@ -1,5 +1,5 @@
-import AppbarLayout from '../../layouts/AppbarLayout';
-import ChallengeCreate from '../../components/Form/ChallengeCreate';
+import AppbarLayout from '@layouts/AppbarLayout';
+import ChallengeCreate from '@components/Form/ChallengeCreate';
 import './style.scss';
 
 export default function CreatePage() {
