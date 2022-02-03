@@ -21,6 +21,10 @@
     .appbar__link {
       cursor: pointer;
     }
+
+    .appbar__container--buttons button {
+      margin-left: 1rem;
+    }
   }
 
   .layout__content--root {
