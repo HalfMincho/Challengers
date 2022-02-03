@@ -20,13 +20,12 @@ const {
   USERNAME_FORM_ERROR,
   EMAIL_FORM_ERROR,
   EMAIL_NULL_ERROR,
-  EMAIL_CODE_ERROR,
+  EMAIL_CODE_NULL_ERROR,
   PASSWORD_FORM_ERROR,
   PASSWORD_CHECK_ERROR,
 } = SIGN_UP_ERROR_MESSAGE;
 
-const { EMAIL_SEND_NOTIFY, EMAIL_REGISTERED_NOTIFY, EMAIL_CODE_SUCCESS, SIGN_UP_SUCCESS } =
-  SIGN_UP_NOTIFY_MESSAGE;
+const { EMAIL_SEND_NOTIFY, EMAIL_CODE_SUCCESS, SIGN_UP_SUCCESS } = SIGN_UP_NOTIFY_MESSAGE;
 
 export default function SignUpPage() {
   const [inputState, setInputState] = useState({
@@ -99,21 +98,23 @@ export default function SignUpPage() {
   };
 
   const handleEmailButton = async () => {
-    if (email.length > 0 && emailResponseText === '') {
+    if (email === '') alert(EMAIL_NULL_ERROR);
+    if (emailResponseText === '') {
       const status = await postRegisterToken(email);
       if (status === 200) {
         setIsCodeInput(true);
         alert(EMAIL_SEND_NOTIFY);
-      } else if (status === 409) alert(EMAIL_REGISTERED_NOTIFY);
-    } else alert(EMAIL_NULL_ERROR);
+      }
+    }
   };
 
   const handleEmailCodeButton = async () => {
+    if (emailCode === '') alert(EMAIL_CODE_NULL_ERROR);
     const status = await postVerifyToken(email, emailCode);
     if (status === 200) {
       setIsCodeRight(true);
       alert(EMAIL_CODE_SUCCESS);
-    } else if (status === 404) alert(EMAIL_CODE_ERROR);
+    }
   };
 
   const handleSignUp = async (e) => {
@@ -137,7 +138,7 @@ export default function SignUpPage() {
 
   return (
     <AppbarLayout>
-      <form className="signUpWrapper">
+      <form id="signUp" onSubmit={handleSignUp} className="signUpWrapper">
         <p className="title">회원가입</p>
         <div className="inputPart">
           <label>이름(닉네임)</label>
@@ -211,7 +212,7 @@ export default function SignUpPage() {
           />
           <p className="error">{passwordCheckResponseText}</p>
         </div>
-        <Button size="medium" fullWidth onClick={handleSignUp}>
+        <Button id="signUp" type="submit" size="medium" fullWidth>
           가입하기
         </Button>
       </form>

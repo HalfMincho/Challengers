@@ -3,6 +3,7 @@ const SIGN_UP_ERROR_MESSAGE = {
   EMAIL_FORM_ERROR: '이메일 형식이 올바르지 않습니다.',
   EMAIL_NULL_ERROR: '이메일 주소를 입력해 주세요.',
   EMAIL_CODE_ERROR: '인증 코드가 일치하지 않습니다.',
+  EMAIL_CODE_NULL_ERROR: '인증 코드를 입력해 주세요.',
   PASSWORD_FORM_ERROR: '비밀번호는 6자 이상 20자 이하 영문과 숫자를 최소 1개씩 포함해야 합니다.',
   PASSWORD_CHECK_ERROR: '비밀번호가 일치하지 않습니다.',
 };
