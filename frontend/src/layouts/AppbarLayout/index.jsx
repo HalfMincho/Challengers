@@ -33,9 +33,11 @@ export default function AppbarLayout({ children }) {
         ))}
         <Searchbar />
         <div className="appbar__container--buttons">
-          <Button color="gray" outline>
-            회원가입
-          </Button>
+          <Link to="/signup">
+            <Button color="gray" outline>
+              회원가입
+            </Button>
+          </Link>
           <Button>로그인</Button>
         </div>
       </div>

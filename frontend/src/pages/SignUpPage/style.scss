@@ -1,0 +1,52 @@
+@import '@common/styles/base';
+
+.signUpWrapper {
+  width: 30rem;
+  margin: 30px auto;
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  input {
+    border: 1px solid $line-gray;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1rem;
+    width: 100%;
+    &.small {
+      width: 80%;
+      margin-right: 5px;
+    }
+  }
+
+  button {
+    justify-content: center;
+    width: 20%;
+    font-size: 1rem;
+  }
+
+  .title {
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+
+  .inputPart {
+    margin: 20px 0;
+  }
+
+  .inputButtonWrapper {
+    display: flex;
+    align-items: stretch;
+    button {
+      height: inherit;
+    }
+  }
+
+  .error {
+    color: $error;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+}
