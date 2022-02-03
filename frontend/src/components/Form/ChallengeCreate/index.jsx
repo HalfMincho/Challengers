@@ -12,7 +12,7 @@ import {
   DAY_ARR,
   TIME_DICT,
   PERIOD_DICT,
-} from '@utils/constants/CHALLENGE';
+} from '@constants/CHALLENGE';
 
 import './style.scss';
 import 'react-datepicker/dist/react-datepicker.css';
