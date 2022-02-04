@@ -1,7 +1,7 @@
-import './style.scss';
 import { FaSearch } from 'react-icons/fa';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './style.scss';
 
 export default function Searchbar() {
   const [keyword, setKeyword] = useState('');

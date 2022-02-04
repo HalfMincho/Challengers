@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import Card from '../Card';
+import axios from 'axios';
+import Card from '@components/Card';
 import './style.scss';
 
 export default function CardList({ type, preview }) {

@@ -2,10 +2,9 @@ import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import { ko } from 'date-fns/esm/locale';
 
-import Button from '../../Button';
-import CheckBox from '../../CheckBox';
-import Box from '../../Box';
-
+import Button from '@components/Button';
+import CheckBox from '@components/CheckBox';
+import Box from '@components/Box';
 import {
   MAX_NAME_LENGTH,
   MAX_CONTENT_LENGTH,
@@ -13,7 +12,7 @@ import {
   DAY_ARR,
   TIME_DICT,
   PERIOD_DICT,
-} from '../../../utils/constants/CHALLENGE';
+} from '@constants/CHALLENGE';
 
 import './style.scss';
 import 'react-datepicker/dist/react-datepicker.css';

@@ -1,7 +1,7 @@
-import CardList from '../../components/CardList';
-import AppbarLayout from '../../layouts/AppbarLayout';
 import { FaChevronRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import AppbarLayout from '@layouts/AppbarLayout';
+import CardList from '@components/CardList';
 import './style.scss';
 
 export default function MainPage() {

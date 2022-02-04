@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import Tag from '../Tag';
+import Tag from '@components/Tag';
 import './style.scss';
 
 export default function Card({ data }) {
