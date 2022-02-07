@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import Button from '@components/Button';
 import Searchbar from '@components/Searchbar';
-import SignInModal from '@components/Modal/SIgnIn';
+import SignInModal from '@components/Modal/SignIn';
 
 import './style.scss';
 
