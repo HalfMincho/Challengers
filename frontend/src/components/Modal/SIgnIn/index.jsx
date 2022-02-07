@@ -56,7 +56,7 @@ export default function SignInModal({ visible, onClose }) {
           required
         />
       </div>
-      <Button size="medium" fullWidth>
+      <Button type="submit" size="medium" fullWidth>
         로그인
       </Button>
       <p className="links">
@@ -66,6 +66,12 @@ export default function SignInModal({ visible, onClose }) {
   );
 
   return (
-    <Modal title="로그인" middleContent={SignInComponent} visible={visible} onClose={onClose} />
+    <Modal
+      title="로그인"
+      middleContent={SignInComponent}
+      visible={visible}
+      onClose={onClose}
+      size="small"
+    />
   );
 }

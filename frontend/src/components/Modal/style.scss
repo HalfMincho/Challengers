@@ -29,10 +29,17 @@
   left: 0;
   right: 0;
   background-color: $bg-white;
-  padding: 20px;
   border-radius: 10px;
   z-index: 999;
-  max-width: 400px;
+
+  &.small {
+    max-width: 350px;
+    padding: 20px;
+  }
+  &.large {
+    max-width: 500px;
+    padding: 30px;
+  }
 
   &.visible {
     animation: fadeIn 0.2s forwards;
