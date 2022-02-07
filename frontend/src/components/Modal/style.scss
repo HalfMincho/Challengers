@@ -35,10 +35,16 @@
   &.small {
     max-width: 350px;
     padding: 20px;
+    .title {
+      margin: 12px 0;
+    }
   }
   &.large {
     max-width: 500px;
     padding: 30px;
+    .title {
+      margin: 30px 0;
+    }
   }
 
   &.visible {
@@ -67,6 +73,8 @@
 
   .subTitle {
     margin-bottom: 20px;
+    white-space: pre-line;
+    font-size: 0.95rem;
   }
 }
 
