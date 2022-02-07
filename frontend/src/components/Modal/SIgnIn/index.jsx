@@ -7,7 +7,7 @@ import { postSignIn } from '@api/postSignIn';
 import { SIGN_IN_NOTIFY_MESSAGE } from '@constants/MESSAGE';
 import './style.scss';
 
-const { SIGN_IN_SUCCESS, PASSWORD_WRONG_ERROR } = SIGN_IN_NOTIFY_MESSAGE;
+const { SIGN_IN_SUCCESS } = SIGN_IN_NOTIFY_MESSAGE;
 
 export default function SignInModal({ visible, onClose }) {
   const [inputState, setInputState] = useState({
@@ -29,8 +29,6 @@ export default function SignInModal({ visible, onClose }) {
       alert(SIGN_IN_SUCCESS);
       onClose();
       location.reload();
-    } else if (status === 403) {
-      alert(PASSWORD_WRONG_ERROR);
     }
   };
 
