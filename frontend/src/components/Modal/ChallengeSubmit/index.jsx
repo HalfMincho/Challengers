@@ -3,7 +3,7 @@ import Modal from '..';
 import Button from '@components/Button';
 import './style.scss';
 
-export default function SubmitModal({ visible, onClose }) {
+export default function ChallengeSubmitModal({ visible, onClose }) {
   const [text, setText] = useState('');
 
   const handleInput = (e) => {
@@ -14,7 +14,7 @@ export default function SubmitModal({ visible, onClose }) {
     e.preventDefault();
   };
 
-  const SubmitComponent = (
+  const ChallengeSubmitComponent = (
     <form className="submitWrapper" onSubmit={handleSubmit}>
       <textarea
         value={text}
@@ -31,7 +31,7 @@ export default function SubmitModal({ visible, onClose }) {
   return (
     <Modal
       title="챌린지 인증"
-      middleContent={SubmitComponent}
+      middleContent={ChallengeSubmitComponent}
       visible={visible}
       onClose={onClose}
       size="large"
