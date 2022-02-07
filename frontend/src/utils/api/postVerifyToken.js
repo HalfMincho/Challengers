@@ -1,6 +1,7 @@
 import axiosInstance from '@utils/axiosConfig';
 import { API_URL } from '@constants/API_URL';
 import { SIGN_UP_ERROR_MESSAGE } from '@constants/MESSAGE';
+
 const { EMAIL_CODE_ERROR } = SIGN_UP_ERROR_MESSAGE;
 
 export const postVerifyToken = async (email, emailCode) => {

@@ -1,6 +1,7 @@
 import axiosInstance from '@utils/axiosConfig';
 import { API_URL } from '@constants/API_URL';
 import { SIGN_UP_NOTIFY_MESSAGE } from '@constants/MESSAGE';
+
 const { EMAIL_REGISTERED_NOTIFY } = SIGN_UP_NOTIFY_MESSAGE;
 
 export const postRegisterToken = async (email) => {
