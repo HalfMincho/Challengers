@@ -519,3 +519,67 @@ export const GetParticipateChallenge = async (req: express.Request) => {
 
   return { status: 200, result: refinedRows };
 };
+
+export const JoinChallenge = async (req: express.Request) => {
+  const { body }: { body: { email: string } } = req;
+  const id = Number(req.params.id);
+  if (isNaN(id)) {
+    return { status: 400, result: { error: "invalid_id" } };
+  }
+
+  const checkChallengeExist = (await pool.execute(
+    `SELECT uuid FROM challenge WHERE id=${id}`,
+  )) as [result: Array<Object>, field: unknown];
+
+  if (checkChallengeExist[0].length < 1) {
+    return { status: 400, result: { error: "challenge_not_exists" } };
+  }
+
+  const [[{ uuid: challengeUUID }]] = checkChallengeExist as unknown as [
+    [{ uuid: Buffer }],
+  ];
+
+  const [[{ uuid: userUUID }]] = (await pool.execute(
+    `SELECT uuid FROM account WHERE email="${body.email}"`,
+  )) as unknown as [[{ uuid: Buffer }]];
+
+  const [[{ "COUNT(*)": checkAccountChallengeRowExist }]] = (await pool.execute(
+    `SELECT COUNT(*) FROM account_challenge WHERE challenge=UNHEX("${uuidStringify(
+      challengeUUID,
+    ).replace(/-/gi, "")}") AND account=UNHEX("${uuidStringify(
+      userUUID,
+    ).replace(/-/gi, "")}")`,
+  )) as unknown as [[{ "COUNT(*)": number }]];
+
+  if (checkAccountChallengeRowExist === 0) {
+    await pool.execute(
+      `INSERT INTO account_challenge (account, challenge, is_participate)
+    VALUE (?,?,?)`,
+      [userUUID, challengeUUID, true],
+    );
+
+    return { status: 200, result: { participate: id } };
+  } else {
+    try {
+      await (await pool.getConnection()).beginTransaction();
+
+      await pool.execute(
+        `UPDATE account_challenge SET is_participate=true WHERE challenge=UNHEX("${uuidStringify(
+          challengeUUID,
+        ).replace(/-/gi, "")}") AND account=UNHEX("${uuidStringify(
+          userUUID,
+        ).replace(/-/gi, "")}")`,
+      );
+
+      await (await pool.getConnection()).commit();
+
+      return { status: 200, result: { participate: id } };
+    } catch (e) {
+      await (await pool.getConnection()).rollback();
+
+      console.error(e);
+
+      return { status: 500, result: { error: "exception_occurred" } };
+    }
+  }
+};

@@ -11,6 +11,7 @@ import {
   GetChallengeWithCategory,
   GetOpenChallenge,
   GetParticipateChallenge,
+  JoinChallenge,
 } from "../services/challenge";
 import { Category } from "../types/challenge";
 
@@ -115,6 +116,16 @@ challengeRouter.delete(
   AuthJWT,
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await DeleteChallenge(Number(req.params.id));
+    res.status(status);
+    res.send(result);
+  },
+);
+
+challengeRouter.post(
+  "/participate/:id",
+  AuthJWT,
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await JoinChallenge(req);
     res.status(status);
     res.send(result);
   },
