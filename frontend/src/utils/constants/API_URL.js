@@ -5,6 +5,7 @@ export const API_URL = {
     POST_SIGN_UP: '/account/register',
     POST_SIGN_IN: '/account/login',
     PUT_USER_NAME: '/account/user/name',
+    PUT_USER_PASSWORD: '/account/user/password',
   },
   CHALLENGE: {
     CHALLENGE_BY_ID: (id) => `/challenge/${id}`,
