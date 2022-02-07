@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+
 import Button from '@components/Button';
 import Searchbar from '@components/Searchbar';
+import SignInModal from '@components/Modal/SIgnIn';
+
 import './style.scss';
 
 function AppbarContainerLink({ category, onClick }) {
@@ -14,6 +18,15 @@ function AppbarContainerLink({ category, onClick }) {
 export default function AppbarLayout({ children }) {
   const navigate = useNavigate();
   const category = ['건강', '역량', '정서', '자산', '생활', '취미'];
+  const [signInModalVisible, setSignInModalVisible] = useState(false);
+
+  const openModal = () => {
+    setSignInModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setSignInModalVisible(false);
+  };
 
   const goResult = (name) => {
     navigate(`/list/search?category=${name}`);
@@ -38,9 +51,10 @@ export default function AppbarLayout({ children }) {
               회원가입
             </Button>
           </Link>
-          <Button>로그인</Button>
+          <Button onClick={openModal}>로그인</Button>
         </div>
       </div>
+      {signInModalVisible && <SignInModal visible={signInModalVisible} onClose={closeModal} />}
       <div className="layout__content--root">{children}</div>
       <div className="footer__space"></div>
     </div>

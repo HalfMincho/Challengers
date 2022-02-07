@@ -15,4 +15,9 @@ const SIGN_UP_NOTIFY_MESSAGE = {
   SIGN_UP_SUCCESS: '회원가입이 완료되었습니다. 로그인 후 이용해 주세요.',
 };
 
-export { SIGN_UP_ERROR_MESSAGE, SIGN_UP_NOTIFY_MESSAGE };
+const SIGN_IN_NOTIFY_MESSAGE = {
+  SIGN_IN_SUCCESS: '로그인되었습니다.',
+  PASSWORD_WRONG_ERROR: '비밀번호를 확인해 주세요.',
+};
+
+export { SIGN_UP_ERROR_MESSAGE, SIGN_UP_NOTIFY_MESSAGE, SIGN_IN_NOTIFY_MESSAGE };
