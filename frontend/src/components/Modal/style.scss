@@ -1,0 +1,81 @@
+@import '@common/styles/base';
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 998;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(1px);
+
+  &:hover {
+    cursor: default;
+  }
+
+  &.visible {
+    animation: fadeIn 0.2s forwards;
+  }
+  &.none {
+    animation: fadeOut 0.2s forwards;
+  }
+}
+
+.modalWrapper {
+  position: fixed;
+  margin: 0 auto;
+  top: 25%;
+  left: 0;
+  right: 0;
+  background-color: $bg-white;
+  padding: 20px;
+  border-radius: 10px;
+  z-index: 999;
+  max-width: 400px;
+
+  &.visible {
+    animation: fadeIn 0.2s forwards;
+  }
+  &.none {
+    animation: fadeOut 0.2s forwards;
+  }
+
+  .closeIcon {
+    display: flex;
+    justify-content: flex-end;
+    color: $font-gray;
+
+    svg:hover {
+      cursor: pointer;
+    }
+  }
+
+  .title {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-top: 30px;
+    margin-bottom: 12px;
+  }
+
+  .subTitle {
+    margin-bottom: 20px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
