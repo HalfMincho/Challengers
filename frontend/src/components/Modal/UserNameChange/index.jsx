@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import Modal from '..';
 import Button from '@components/Button';
-import './style.scss';
 import { putUserName } from '@utils/api/putUserName';
 import { validateUserName } from '@utils/checkResponse';
 import { SIGN_UP_ERROR_MESSAGE } from '@utils/constants/MESSAGE';
+import './style.scss';
 
 const { USERNAME_FORM_ERROR } = SIGN_UP_ERROR_MESSAGE;
 
@@ -37,7 +37,7 @@ export default function UserNameChangeModal({ visible, onClose }) {
         required
       />
       <p className="error">{userNameResponseText}</p>
-      <Button type="submit" size="medium" onClick={changeUserName} fullWidth>
+      <Button type="submit" size="medium" fullWidth>
         확인
       </Button>
     </form>
