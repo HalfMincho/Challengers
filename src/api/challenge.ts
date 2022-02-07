@@ -10,6 +10,7 @@ import {
   GetChallengeWithTitle,
   GetChallengeWithCategory,
   GetOpenChallenge,
+  GetParticipateChallenge,
 } from "../services/challenge";
 import { Category } from "../types/challenge";
 
@@ -65,6 +66,16 @@ challengeRouter.get(
   AuthJWT,
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await GetOpenChallenge(req);
+    res.status(status);
+    res.send(result);
+  },
+);
+
+challengeRouter.get(
+  "/participate",
+  AuthJWT,
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await GetParticipateChallenge(req);
     res.status(status);
     res.send(result);
   },
