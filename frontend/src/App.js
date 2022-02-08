@@ -7,6 +7,7 @@ const List = lazy(() => import('@pages/List'));
 const Detail = lazy(() => import('@pages/Detail'));
 const Create = lazy(() => import('@pages/Create'));
 const SignUp = lazy(() => import('@pages/SignUp'));
+const Profile = lazy(() => import('@pages/Profile'));
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route element={<Detail />} path="/detail/:id" />
           <Route element={<Create />} path="/create" />
           <Route element={<SignUp />} path="/signup" />
+          <Route element={<Profile />} path="/profile" />
         </Routes>
       </div>
     </Suspense>
