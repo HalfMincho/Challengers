@@ -1,0 +1,26 @@
+@import '@common/styles/base';
+
+.ProfilePageWrapper {
+  section {
+    margin-bottom: 4rem;
+    .sectionTitle {
+      font-weight: 500;
+      font-size: 1.1rem;
+      margin: 10px 0;
+    }
+    .Box {
+      box-shadow: 1px 1px 1px $line-gray;
+      justify-content: normal;
+      padding: 30px;
+      .infoName {
+        font-weight: 500;
+      }
+    }
+    .modalLink {
+      color: $brand;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-left: 20px;
+    }
+  }
+}
