@@ -13,6 +13,7 @@ import {
   GetParticipateChallenge,
   JoinChallenge,
   GetCompleteChallenge,
+  MakeChallengeComplete,
 } from "../services/challenge";
 import { Category } from "../types/challenge";
 
@@ -137,6 +138,16 @@ challengeRouter.post(
   AuthJWT,
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await JoinChallenge(req);
+    res.status(status);
+    res.send(result);
+  },
+);
+
+challengeRouter.post(
+  "/complete/:id",
+  AuthJWT,
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await MakeChallengeComplete(req);
     res.status(status);
     res.send(result);
   },
