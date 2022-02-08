@@ -583,3 +583,40 @@ export const JoinChallenge = async (req: express.Request) => {
     }
   }
 };
+
+export const GetCompleteChallenge = async (req: express.Request) => {
+  const { body }: { body: { email: string } } = req;
+
+  const [[{ uuid: userUUID }]] = (await pool.execute(
+    `SELECT uuid FROM account WHERE email="${body.email}"`,
+  )) as unknown as [[{ uuid: Buffer }]];
+
+  const [challengeUUIDRow] = (await pool.execute(
+    `SELECT challenge FROM account_challenge WHERE account=UNHEX("${uuidStringify(
+      userUUID,
+    ).replace(/-/gi, "")}") AND is_complete=true`,
+  )) as [challengeUUID: { challenge: Buffer }[], field: unknown];
+
+  const refinedRows = await Promise.all(
+    challengeUUIDRow.map(async (singleChallenge: { challenge: Buffer }) => {
+      const [[challenge]] = (await pool.execute(
+        `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+    auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
+    start_at, end_at, cost, description, reg_date, views FROM challenge WHERE uuid=UNHEX("${uuidStringify(
+      singleChallenge.challenge,
+    ).replace(/-/gi, "")}")`,
+      )) as unknown as [[challenge: ChallengeFromDB]];
+
+      const username = await GetNameFromUUID(challenge.submitter);
+      const categoryName = await GetCategoryFromUUID(challenge.category);
+
+      return {
+        ...challenge,
+        category: categoryName,
+        submitter: username,
+      };
+    }),
+  );
+
+  return { status: 200, result: refinedRows };
+};

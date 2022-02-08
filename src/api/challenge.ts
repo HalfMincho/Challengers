@@ -12,6 +12,7 @@ import {
   GetOpenChallenge,
   GetParticipateChallenge,
   JoinChallenge,
+  GetCompleteChallenge,
 } from "../services/challenge";
 import { Category } from "../types/challenge";
 
@@ -77,6 +78,16 @@ challengeRouter.get(
   AuthJWT,
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await GetParticipateChallenge(req);
+    res.status(status);
+    res.send(result);
+  },
+);
+
+challengeRouter.get(
+  "/complete",
+  AuthJWT,
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await GetCompleteChallenge(req);
     res.status(status);
     res.send(result);
   },
