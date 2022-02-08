@@ -2,11 +2,11 @@ import React, { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import './App.scss';
 
-const Main = lazy(() => import('@pages/MainPage'));
-const List = lazy(() => import('@pages/ListPage'));
-const Detail = lazy(() => import('@pages/DetailPage'));
-const Create = lazy(() => import('@pages/CreatePage'));
-const SignUp = lazy(() => import('@pages/SignUpPage'));
+const Main = lazy(() => import('@pages/Main'));
+const List = lazy(() => import('@pages/List'));
+const Detail = lazy(() => import('@pages/Detail'));
+const Create = lazy(() => import('@pages/Create'));
+const SignUp = lazy(() => import('@pages/SignUp'));
 
 function App() {
   return (
