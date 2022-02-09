@@ -9,6 +9,11 @@ import {
   DeleteChallenge,
   GetChallengeWithTitle,
   GetChallengeWithCategory,
+  GetOpenChallenge,
+  GetParticipateChallenge,
+  JoinChallenge,
+  GetCompleteChallenge,
+  MakeChallengeComplete,
 } from "../services/challenge";
 import { Category } from "../types/challenge";
 
@@ -60,6 +65,36 @@ challengeRouter.get(
 );
 
 challengeRouter.get(
+  "/open",
+  AuthJWT,
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await GetOpenChallenge(req);
+    res.status(status);
+    res.send(result);
+  },
+);
+
+challengeRouter.get(
+  "/participate",
+  AuthJWT,
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await GetParticipateChallenge(req);
+    res.status(status);
+    res.send(result);
+  },
+);
+
+challengeRouter.get(
+  "/complete",
+  AuthJWT,
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await GetCompleteChallenge(req);
+    res.status(status);
+    res.send(result);
+  },
+);
+
+challengeRouter.get(
   "/:id",
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await GetChallenge(Number(req.params.id));
@@ -93,6 +128,26 @@ challengeRouter.delete(
   AuthJWT,
   async (req: express.Request, res: express.Response) => {
     const { status, result } = await DeleteChallenge(Number(req.params.id));
+    res.status(status);
+    res.send(result);
+  },
+);
+
+challengeRouter.post(
+  "/participate/:id",
+  AuthJWT,
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await JoinChallenge(req);
+    res.status(status);
+    res.send(result);
+  },
+);
+
+challengeRouter.post(
+  "/complete/:id",
+  AuthJWT,
+  async (req: express.Request, res: express.Response) => {
+    const { status, result } = await MakeChallengeComplete(req);
     res.status(status);
     res.send(result);
   },
