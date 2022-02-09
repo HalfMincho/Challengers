@@ -1,0 +1,31 @@
+.cartListWrapper {
+  ul {
+    list-style: none;
+    padding-inline-start: 0;
+    margin: 0 10px;
+    span {
+      font-size: 0.8rem;
+    }
+    span + span {
+      margin-left: 10px;
+    }
+    li + li {
+      margin-top: 10px;
+    }
+    .Box {
+      display: block;
+      width: 14rem;
+      padding: 10px;
+      cursor: pointer;
+      .challengeName {
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+    }
+  }
+  .flex {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px;
+  }
+}
