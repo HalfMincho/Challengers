@@ -15,7 +15,11 @@ import { postVerifyToken } from '@api/postVerifyToken';
 import { SIGN_UP_ERROR_MESSAGE, SIGN_UP_NOTIFY_MESSAGE } from '@constants/MESSAGE';
 import './style.scss';
 import { useDispatch } from 'react-redux';
-import { registerThunk } from '../../features/account/AccountThunks';
+import {
+  registerThunk,
+  registerTokenThunk,
+  verifyTokenThunk,
+} from '../../features/account/AccountThunks';
 
 const {
   USERNAME_FORM_ERROR,
@@ -102,20 +106,31 @@ export default function SignUpPage() {
   const handleEmailButton = async () => {
     if (email === '') alert(EMAIL_NULL_ERROR);
     if (emailResponseText === '') {
-      const status = await postRegisterToken(email);
-      if (status === 200) {
-        setIsCodeInput(true);
-        alert(EMAIL_SEND_NOTIFY);
-      }
+      dispatch(registerTokenThunk({ email: email }))
+        .unwrap()
+        .then(() => {
+          setIsCodeInput(true);
+          alert(EMAIL_SEND_NOTIFY);
+        })
+        .catch((error) => {
+          console.log('error', error);
+        });
     }
   };
 
   const handleEmailCodeButton = async () => {
-    if (emailCode === '') alert(EMAIL_CODE_NULL_ERROR);
-    const status = await postVerifyToken(email, emailCode);
-    if (status === 200) {
-      setIsCodeRight(true);
-      alert(EMAIL_CODE_SUCCESS);
+    if (emailCode === '') {
+      alert(EMAIL_CODE_NULL_ERROR);
+    } else {
+      dispatch(verifyTokenThunk({ emailCode: emailCode, email: email }))
+        .unwrap()
+        .then(() => {
+          setIsCodeRight(true);
+          alert(EMAIL_CODE_SUCCESS);
+        })
+        .catch((error) => {
+          console.log('error', error);
+        });
     }
   };
 

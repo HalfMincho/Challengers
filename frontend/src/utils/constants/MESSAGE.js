@@ -8,9 +8,12 @@ const SIGN_UP_ERROR_MESSAGE = {
   PASSWORD_CHECK_ERROR: '비밀번호가 일치하지 않습니다.',
 
   // '/account/register' 관련
-  TOKEN_VERIFICATION_IS_NEEDED: '인증 코드를 검증해주세요.',
-  PASSWORD_POLICY_MISMATCH: '해당 비밀번호가 비밀번호 정책에 부합하지 않습니다.',
+  TOKEN_VERIFICATION_IS_NEEDED: '인증 코드가 검증되지 않았습니다. 검증 후 다시 시도해주세요.',
   NAME_TOO_LONG: '이름이 255자 이상입니다.',
+};
+
+const PASSWORD_ERROR_MESSAGE = {
+  PASSWORD_POLICY_MISMATCH: '해당 비밀번호가 비밀번호 정책에 부합하지 않습니다.',
 };
 
 const SIGN_UP_NOTIFY_MESSAGE = {
@@ -22,7 +25,7 @@ const SIGN_UP_NOTIFY_MESSAGE = {
 
 const SIGN_IN_NOTIFY_MESSAGE = {
   SIGN_IN_SUCCESS: '로그인되었습니다.',
-  PASSWORD_WRONG_ERROR: '비밀번호를 확인해 주세요.',
+  PASSWORD_WRONG_ERROR: '아이디 또는 비밀번호를 확인해 주세요.',
 };
 
 const CHALLENGE_MANAGE_MESSAGE = {
@@ -34,4 +37,5 @@ export {
   SIGN_UP_NOTIFY_MESSAGE,
   SIGN_IN_NOTIFY_MESSAGE,
   CHALLENGE_MANAGE_MESSAGE,
+  PASSWORD_ERROR_MESSAGE,
 };

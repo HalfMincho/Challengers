@@ -1,8 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import accountSlice from './AccountSlice';
 import { postSignUp } from '@api/postSignUp';
-import { getAccessToken } from '@utils/helpers/tokensHelper';
 import { postSignIn } from '@api/postSignIn';
+import { postRegisterToken } from '@api/postRegisterToken';
+import { postVerifyToken } from '@api/postVerifyToken';
+import { putUserName } from '@api/putUserName';
+import { getUser } from '@api/getUser';
+import { putPassword } from '@api/putPassword';
 
 export const registerThunk = createAsyncThunk('account/register', async (payload, { dispatch }) => {
   const { name, email, emailCode, password } = payload;
@@ -15,25 +19,38 @@ export const loginThunk = createAsyncThunk('account/login', async (payload, { di
   dispatch(accountSlice.actions.setLoggedIn());
 });
 
-export const logoutThunk = createAsyncThunk('account/logout', async (_, { dispatch }) => {
-  await logout();
-  dispatch(accountSlice.actions.setLoggedOut());
+export const registerTokenThunk = createAsyncThunk(
+  'account/register-token',
+  async (payload, { dispatch }) => {
+    const { email } = payload;
+    await postRegisterToken(email);
+  },
+);
+export const verifyTokenThunk = createAsyncThunk(
+  'account/verify-token',
+  async (payload, { dispatch }) => {
+    const { emailCode, email } = payload;
+    await postVerifyToken(emailCode, email);
+  },
+);
 
-  // if (response.response !== "OK") {
-  //   rejectWithValue(response);
-  // } else {
-  //   dispatch(accountSlice.actions.setLoggedOut());
-  // }
-});
+export const changeUserNameThunk = createAsyncThunk(
+  'account/user/name',
+  async (payload, { dispatch }) => {
+    const { name } = payload;
+    await putUserName(name);
+  },
+);
 
-export const getUserIdThunk = createAsyncThunk('account/getUserId', async (_, { dispatch }) => {
-  const result = await getUserId();
-  dispatch(accountSlice.actions.setUserId(result.userId));
+export const changeUserPasswordThunk = createAsyncThunk(
+  'account/user/password',
+  async (payload, { dispatch }) => {
+    const { password, newPassword } = payload;
+    await putPassword(password, newPassword);
+  },
+);
 
-  // if (result.response === 'OK') {
-  //   dispatch(accountSlice.actions.setUserId(result.data.userId));
-  //   return {response: 'OK'};
-  // } else {
-  //   return result;
-  // }
+export const getUserThunk = createAsyncThunk('account/user', async (_, { dispatch }) => {
+  const result = await getUser();
+  dispatch(accountSlice.actions.setUser(result));
 });

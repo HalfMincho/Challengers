@@ -1,11 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Box from '@components/Box';
 import AppbarLayout from '@layouts/AppbarLayout';
 import UserNameChangeModal from '@components/Modal/UserNameChange';
 import PasswordChangeModal from '@components/Modal/PasswordChange';
 import './style.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserThunk } from '../../features/account/AccountThunks';
 
 export default function ProfilePage() {
+  const dispatch = useDispatch();
+  const [user, setUser] = useState({
+    userName: '',
+    email: '',
+  });
+  // const { userName, email } = user;
+  const account = useSelector((state) => state.account);
   const [modalState, setModalState] = useState({
     userNameChangeModalVisible: false,
     passwordChangeModalVisible: false,
@@ -20,6 +29,17 @@ export default function ProfilePage() {
     setModalState({ ...modalState, [type + 'ChangeModalVisible']: false });
   };
 
+  useEffect(() => {
+    dispatch(getUserThunk())
+      .unwrap()
+      .then(() => {
+        setUser({
+          userName: account.userName,
+          email: account.email,
+        });
+      });
+  }, []);
+
   return (
     <AppbarLayout>
       <div className="ProfilePageWrapper">
@@ -27,8 +47,8 @@ export default function ProfilePage() {
           <p className="sectionTitle">내 정보</p>
           <Box color="gray" fullWidth>
             <div>
-              <p className="infoName">이름(닉네임)</p>
-              <p className="infoName">이메일</p>
+              <p className="infoName">{user.userName}</p>
+              <p className="infoName">{user.email}</p>
             </div>
             <div>
               <div>

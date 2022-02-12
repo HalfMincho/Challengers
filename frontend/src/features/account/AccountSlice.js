@@ -17,7 +17,7 @@ const accountSlice = createSlice({
       state.isLoggedIn = false;
       state.userName = '';
     },
-    setUserId: (state, action) => {
+    setUser: (state, action) => {
       state.userName = action.payload.name;
       state.email = action.payload.email;
     },
