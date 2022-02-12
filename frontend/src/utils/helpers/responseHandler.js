@@ -8,34 +8,40 @@ import {
 import { api } from '@utils/axiosConfig';
 
 const refreshToken = () => {
-  return api.post(`/account/refresh`, {
-    refreshToken: getRefreshToken(),
-    accessToken: getAccessToken(),
+  return api.get(`/account/refresh`, {
+    headers: { Authorization: `Challengers ${getAccessToken()}`, Refresh: `${getRefreshToken()}` },
   });
 };
 
 export const responseHandler = (response) => {
-  const { data } = response;
-  console.log(response);
-  const { resultCode, needRedirect, resultData } = data;
+  const { status, result } = response;
+  console.log('responseHandler response', response);
 
-  if (resultCode === '0000' && resultData) {
-    return resultData;
+  if (status === 200 && result) {
+    return result;
   }
 
-  if (resultCode === '2004') {
+  if (result.message === 'jwt expired') {
     const originalRequest = response.config;
-    return refreshToken().then((res) => {
-      setAccessToken(res.accessToken);
-      originalRequest.headers['Authorization'] = `Bearer ${res.accessToken}`;
+    return refreshToken().then((axiosRes) => {
+      setAccessToken(axiosRes.accessToken.newAccessToken);
+      originalRequest.headers['Authorization'] = `Bearer ${axiosRes.accessToken.newAccessToken}`;
       return api(originalRequest);
     });
   } else {
-    if (needRedirect === true) {
+    if (status === 401) {
       resetAccessToken();
       resetRefreshToken();
       window.location.href = '/login';
+
+      if (result.error === 'new_login_is_required') {
+        alert('인증이 만료되었습니다. 다시 로그인 해주세요.');
+      } else {
+        alert('유효하지 않은 계정입니다. 다시 로그인 해주세요.');
+      }
+    } else {
+      alert('인증에 실패하였습니다. 로그인 해주세요.');
+      return Promise.reject({ status: status, resultData: result });
     }
-    return Promise.reject(data);
   }
 };

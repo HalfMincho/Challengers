@@ -139,10 +139,10 @@ export default function SignUpPage() {
           navigate('/');
         })
         .catch((error) => {
-          if (error.resultCode === undefined) {
+          if (error.status === undefined) {
             alert('Unknown Error');
           } else {
-            alert(`${error.resultCode}: ${error.description}`);
+            alert(`${error.status}: ${error.result}`);
           }
         });
     }

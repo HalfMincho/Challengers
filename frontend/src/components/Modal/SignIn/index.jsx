@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 import Modal from '..';
 import Button from '@components/Button';
-import { postSignIn } from '@api/postSignIn';
 import { SIGN_IN_NOTIFY_MESSAGE } from '@constants/MESSAGE';
 import './style.scss';
 import { useDispatch } from 'react-redux';
@@ -36,10 +35,10 @@ export default function SignInModal({ visible, onClose }) {
         location.reload();
       })
       .catch((error) => {
-        if (error.resultCode === undefined) {
+        if (error.status === undefined) {
           alert('Unknown Error');
         } else {
-          alert(`${error.resultCode}: ${error.description}`);
+          alert(`${error.status}: ${error.result}`);
         }
         dispatch(accountSlice.actions.setLoggedOut);
       });
