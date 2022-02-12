@@ -1,27 +1,25 @@
 import axios from 'axios';
+import { jwtRequestHandler } from './helpers/jwtRequestHandler';
+import { responseHandler } from './helpers/responseHandler';
 
-const axiosInstance = axios.create({
-  timeout: 5000,
-  headers: {
-    'Content-Type': 'application/json; charset=utf-8',
-  },
-});
+const api = axios.create();
 
-axiosInstance.interceptors.request.use(
+api.interceptors.request.use(
   (config) => {
-    return config;
+    return jwtRequestHandler(config);
   },
-  (err) => {
-    return Promise.reject(err);
+  (error) => {
+    return Promise.reject(error);
   },
 );
 
-axiosInstance.interceptors.response.use(
-  (config) => {
-    return config;
+api.interceptors.response.use(
+  (response) => {
+    return responseHandler(response);
   },
-  (err) => {
-    return Promise.reject(err);
+  (error) => {
+    return Promise.reject(error);
   },
 );
-export default axiosInstance;
+
+export { api };

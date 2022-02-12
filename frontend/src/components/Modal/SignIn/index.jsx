@@ -6,10 +6,14 @@ import Button from '@components/Button';
 import { postSignIn } from '@api/postSignIn';
 import { SIGN_IN_NOTIFY_MESSAGE } from '@constants/MESSAGE';
 import './style.scss';
+import { useDispatch } from 'react-redux';
+import { loginThunk } from '../../../features/account/AccountThunks';
+import accountSlice from '../../../features/account/AccountSlice';
 
 const { SIGN_IN_SUCCESS } = SIGN_IN_NOTIFY_MESSAGE;
 
 export default function SignInModal({ visible, onClose }) {
+  const dispatch = useDispatch();
   const [inputState, setInputState] = useState({
     email: '',
     password: '',
@@ -24,12 +28,21 @@ export default function SignInModal({ visible, onClose }) {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    const status = await postSignIn(email, password);
-    if (status === 200) {
-      alert(SIGN_IN_SUCCESS);
-      onClose();
-      location.reload();
-    }
+    dispatch(loginThunk({ email: email, password: password }))
+      .unwrap()
+      .then(() => {
+        alert(SIGN_IN_SUCCESS);
+        onClose();
+        location.reload();
+      })
+      .catch((error) => {
+        if (error.resultCode === undefined) {
+          alert('Unknown Error');
+        } else {
+          alert(`${error.resultCode}: ${error.description}`);
+        }
+        dispatch(accountSlice.actions.setLoggedOut);
+      });
   };
 
   const SignInComponent = (

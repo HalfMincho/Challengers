@@ -12,9 +12,10 @@ import {
 } from '@utils/checkResponse';
 import { postRegisterToken } from '@api/postRegisterToken';
 import { postVerifyToken } from '@api/postVerifyToken';
-import { postSignUp } from '@api/postSignUp';
 import { SIGN_UP_ERROR_MESSAGE, SIGN_UP_NOTIFY_MESSAGE } from '@constants/MESSAGE';
 import './style.scss';
+import { useDispatch } from 'react-redux';
+import { registerThunk } from '../../features/account/AccountThunks';
 
 const {
   USERNAME_FORM_ERROR,
@@ -28,6 +29,9 @@ const {
 const { EMAIL_SEND_NOTIFY, EMAIL_CODE_SUCCESS, SIGN_UP_SUCCESS } = SIGN_UP_NOTIFY_MESSAGE;
 
 export default function SignUpPage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [inputState, setInputState] = useState({
     userName: '',
     email: '',
@@ -45,8 +49,6 @@ export default function SignUpPage() {
 
   const [isCodeInput, setIsCodeInput] = useState(false);
   const [isCodeRight, setIsCodeRight] = useState(false);
-
-  const navigate = useNavigate();
 
   const { userName, email, emailCode, password, passwordCheck } = inputState;
   const {
@@ -128,11 +130,21 @@ export default function SignUpPage() {
         passwordCheckResponseText,
       )
     ) {
-      const status = await postSignUp(userName, email, emailCode, password);
-      if (status === 200) {
-        alert(SIGN_UP_SUCCESS);
-        navigate('/');
-      }
+      dispatch(
+        registerThunk({ name: userName, email: email, emailCode: emailCode, password: password }),
+      )
+        .unwrap()
+        .then(() => {
+          alert(SIGN_UP_SUCCESS);
+          navigate('/');
+        })
+        .catch((error) => {
+          if (error.resultCode === undefined) {
+            alert('Unknown Error');
+          } else {
+            alert(`${error.resultCode}: ${error.description}`);
+          }
+        });
     }
   };
 
