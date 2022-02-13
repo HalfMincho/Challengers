@@ -10,8 +10,6 @@ import {
   validatePasswordCheck,
   isSendPossible,
 } from '@utils/checkResponse';
-import { postRegisterToken } from '@api/postRegisterToken';
-import { postVerifyToken } from '@api/postVerifyToken';
 import { SIGN_UP_ERROR_MESSAGE, SIGN_UP_NOTIFY_MESSAGE } from '@constants/MESSAGE';
 import './style.scss';
 import { useDispatch } from 'react-redux';
@@ -104,16 +102,18 @@ export default function SignUpPage() {
   };
 
   const handleEmailButton = async () => {
-    if (email === '') alert(EMAIL_NULL_ERROR);
-    if (emailResponseText === '') {
+    if (email === '') {
+      alert(EMAIL_NULL_ERROR);
+    } else if (emailResponseText === '') {
       dispatch(registerTokenThunk({ email: email }))
         .unwrap()
-        .then(() => {
+        .then((payload) => {
+          console.log('fulfilled', payload);
           setIsCodeInput(true);
           alert(EMAIL_SEND_NOTIFY);
         })
         .catch((error) => {
-          console.log('error', error);
+          console.log('rejected', error);
         });
     }
   };
@@ -124,12 +124,13 @@ export default function SignUpPage() {
     } else {
       dispatch(verifyTokenThunk({ emailCode: emailCode, email: email }))
         .unwrap()
-        .then(() => {
+        .then((payload) => {
+          console.log('fulfilled', payload);
           setIsCodeRight(true);
           alert(EMAIL_CODE_SUCCESS);
         })
         .catch((error) => {
-          console.log('error', error);
+          console.log('rejected', error);
         });
     }
   };

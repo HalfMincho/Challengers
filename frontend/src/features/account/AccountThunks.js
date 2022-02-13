@@ -5,10 +5,10 @@ import { postSignIn } from '@api/postSignIn';
 import { postRegisterToken } from '@api/postRegisterToken';
 import { postVerifyToken } from '@api/postVerifyToken';
 import { putUserName } from '@api/putUserName';
-import { getUser } from '@api/getUser';
+import { getUserInfo } from '@api/getUserInfo';
 import { putPassword } from '@api/putPassword';
 
-export const registerThunk = createAsyncThunk('account/register', async (payload, { dispatch }) => {
+export const registerThunk = createAsyncThunk('account/register', async (payload) => {
   const { name, email, emailCode, password } = payload;
   await postSignUp(name, email, emailCode, password);
 });
@@ -19,38 +19,29 @@ export const loginThunk = createAsyncThunk('account/login', async (payload, { di
   dispatch(accountSlice.actions.setLoggedIn());
 });
 
-export const registerTokenThunk = createAsyncThunk(
-  'account/register-token',
-  async (payload, { dispatch }) => {
-    const { email } = payload;
-    await postRegisterToken(email);
-  },
-);
-export const verifyTokenThunk = createAsyncThunk(
-  'account/verify-token',
-  async (payload, { dispatch }) => {
-    const { emailCode, email } = payload;
-    await postVerifyToken(emailCode, email);
-  },
-);
+export const registerTokenThunk = createAsyncThunk('account/register-token', async (payload) => {
+  const { email } = payload;
+  await postRegisterToken(email);
+});
+export const verifyTokenThunk = createAsyncThunk('account/verify-token', async (payload) => {
+  const { emailCode, email } = payload;
+  await postVerifyToken(emailCode, email);
+});
 
-export const changeUserNameThunk = createAsyncThunk(
-  'account/user/name',
-  async (payload, { dispatch }) => {
-    const { name } = payload;
-    await putUserName(name);
-  },
-);
+export const changeUserNameThunk = createAsyncThunk('account/user/name', async (payload) => {
+  const { name } = payload;
+  await putUserName(name);
+});
 
 export const changeUserPasswordThunk = createAsyncThunk(
   'account/user/password',
-  async (payload, { dispatch }) => {
+  async (payload) => {
     const { password, newPassword } = payload;
     await putPassword(password, newPassword);
   },
 );
 
 export const getUserThunk = createAsyncThunk('account/user', async (_, { dispatch }) => {
-  const result = await getUser();
+  const result = await getUserInfo();
   dispatch(accountSlice.actions.setUser(result));
 });

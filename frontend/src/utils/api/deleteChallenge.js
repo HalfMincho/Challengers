@@ -6,6 +6,7 @@ export const postSignUp = async (id) => {
     const response = await api.delete(API_URL.CHALLENGE.CHALLENGE_BY_ID(id));
     return response.status;
   } catch (error) {
-    console.log(error);
+    console.log('error', error);
+    return Promise.reject(error);
   }
 };

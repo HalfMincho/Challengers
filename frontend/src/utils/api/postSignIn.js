@@ -16,8 +16,6 @@ export const postSignIn = async (email, password) => {
   } catch (error) {
     if (error.response.status === 403) {
       alert(PASSWORD_WRONG_ERROR);
-    } else {
-      console.log('postSignIn error occur', error);
     }
     return Promise.reject(error);
   }

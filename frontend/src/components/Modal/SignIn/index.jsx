@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import Modal from '..';
 import Button from '@components/Button';
@@ -13,6 +13,7 @@ const { SIGN_IN_SUCCESS } = SIGN_IN_NOTIFY_MESSAGE;
 
 export default function SignInModal({ visible, onClose }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [inputState, setInputState] = useState({
     email: '',
     password: '',
@@ -32,7 +33,7 @@ export default function SignInModal({ visible, onClose }) {
       .then(() => {
         alert(SIGN_IN_SUCCESS);
         onClose();
-        location.reload();
+        navigate('/');
       })
       .catch((error) => {
         if (error.status === undefined) {

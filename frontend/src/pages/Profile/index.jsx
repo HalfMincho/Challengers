@@ -38,7 +38,7 @@ export default function ProfilePage() {
           email: account.email,
         });
       });
-  }, []);
+  });
 
   return (
     <AppbarLayout>

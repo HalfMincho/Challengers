@@ -14,14 +14,13 @@ const refreshToken = () => {
 };
 
 export const responseHandler = (response) => {
-  const { status, result } = response;
-  console.log('responseHandler response', response);
+  const { status, data } = response;
 
-  if (status === 200 && result) {
-    return result;
+  if (status === 200) {
+    return data;
   }
 
-  if (result.message === 'jwt expired') {
+  if (data.message === 'jwt expired') {
     const originalRequest = response.config;
     return refreshToken().then((axiosRes) => {
       setAccessToken(axiosRes.accessToken.newAccessToken);
@@ -34,14 +33,14 @@ export const responseHandler = (response) => {
       resetRefreshToken();
       window.location.href = '/login';
 
-      if (result.error === 'new_login_is_required') {
+      if (data.error === 'new_login_is_required') {
         alert('인증이 만료되었습니다. 다시 로그인 해주세요.');
       } else {
         alert('유효하지 않은 계정입니다. 다시 로그인 해주세요.');
       }
     } else {
       alert('인증에 실패하였습니다. 로그인 해주세요.');
-      return Promise.reject({ status: status, resultData: result });
+      return Promise.reject(data);
     }
   }
 };

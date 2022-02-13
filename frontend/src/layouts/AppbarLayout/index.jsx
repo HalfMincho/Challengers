@@ -42,6 +42,7 @@ export default function AppbarLayout({ children }) {
     resetAccessToken();
     resetRefreshToken();
     dispatch(accountSlice.actions.setLoggedOut());
+    navigate('/');
   };
 
   return (

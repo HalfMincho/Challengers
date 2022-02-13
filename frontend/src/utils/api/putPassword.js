@@ -11,9 +11,10 @@ export const putPassword = async (password, newPassword) => {
       newPassword: newPassword,
     });
   } catch (error) {
-    if (error.status === 400) {
+    if (error.response.status === 400) {
       alert(PASSWORD_POLICY_MISMATCH);
     }
     console.log('error', error);
+    return Promise.reject(error);
   }
 };
