@@ -10,11 +10,14 @@ import {
   validatePasswordCheck,
   isSendPossible,
 } from '@utils/checkResponse';
-import { postRegisterToken } from '@api/postRegisterToken';
-import { postVerifyToken } from '@api/postVerifyToken';
-import { postSignUp } from '@api/postSignUp';
 import { SIGN_UP_ERROR_MESSAGE, SIGN_UP_NOTIFY_MESSAGE } from '@constants/MESSAGE';
 import './style.scss';
+import { useDispatch } from 'react-redux';
+import {
+  registerThunk,
+  registerTokenThunk,
+  verifyTokenThunk,
+} from '../../features/account/AccountThunks';
 
 const {
   USERNAME_FORM_ERROR,
@@ -28,6 +31,9 @@ const {
 const { EMAIL_SEND_NOTIFY, EMAIL_CODE_SUCCESS, SIGN_UP_SUCCESS } = SIGN_UP_NOTIFY_MESSAGE;
 
 export default function SignUpPage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [inputState, setInputState] = useState({
     userName: '',
     email: '',
@@ -45,8 +51,6 @@ export default function SignUpPage() {
 
   const [isCodeInput, setIsCodeInput] = useState(false);
   const [isCodeRight, setIsCodeRight] = useState(false);
-
-  const navigate = useNavigate();
 
   const { userName, email, emailCode, password, passwordCheck } = inputState;
   const {
@@ -98,22 +102,36 @@ export default function SignUpPage() {
   };
 
   const handleEmailButton = async () => {
-    if (email === '') alert(EMAIL_NULL_ERROR);
-    if (emailResponseText === '') {
-      const status = await postRegisterToken(email);
-      if (status === 200) {
-        setIsCodeInput(true);
-        alert(EMAIL_SEND_NOTIFY);
-      }
+    if (email === '') {
+      alert(EMAIL_NULL_ERROR);
+    } else if (emailResponseText === '') {
+      dispatch(registerTokenThunk({ email: email }))
+        .unwrap()
+        .then((payload) => {
+          console.log('fulfilled', payload);
+          setIsCodeInput(true);
+          alert(EMAIL_SEND_NOTIFY);
+        })
+        .catch((error) => {
+          console.log('rejected', error);
+        });
     }
   };
 
   const handleEmailCodeButton = async () => {
-    if (emailCode === '') alert(EMAIL_CODE_NULL_ERROR);
-    const status = await postVerifyToken(email, emailCode);
-    if (status === 200) {
-      setIsCodeRight(true);
-      alert(EMAIL_CODE_SUCCESS);
+    if (emailCode === '') {
+      alert(EMAIL_CODE_NULL_ERROR);
+    } else {
+      dispatch(verifyTokenThunk({ emailCode: emailCode, email: email }))
+        .unwrap()
+        .then((payload) => {
+          console.log('fulfilled', payload);
+          setIsCodeRight(true);
+          alert(EMAIL_CODE_SUCCESS);
+        })
+        .catch((error) => {
+          console.log('rejected', error);
+        });
     }
   };
 
@@ -128,11 +146,21 @@ export default function SignUpPage() {
         passwordCheckResponseText,
       )
     ) {
-      const status = await postSignUp(userName, email, emailCode, password);
-      if (status === 200) {
-        alert(SIGN_UP_SUCCESS);
-        navigate('/');
-      }
+      dispatch(
+        registerThunk({ name: userName, email: email, emailCode: emailCode, password: password }),
+      )
+        .unwrap()
+        .then(() => {
+          alert(SIGN_UP_SUCCESS);
+          navigate('/');
+        })
+        .catch((error) => {
+          if (error.status === undefined) {
+            alert('Unknown Error');
+          } else {
+            alert(`${error.status}: ${error.result}`);
+          }
+        });
     }
   };
 

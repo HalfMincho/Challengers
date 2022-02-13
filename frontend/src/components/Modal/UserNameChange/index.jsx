@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import Modal from '..';
 import Button from '@components/Button';
-import { putUserName } from '@utils/api/putUserName';
 import { validateUserName } from '@utils/checkResponse';
 import { SIGN_UP_ERROR_MESSAGE } from '@utils/constants/MESSAGE';
 import './style.scss';
+import { useDispatch } from 'react-redux';
+import { changeUserNameThunk } from '../../../features/account/AccountThunks';
 
 const { USERNAME_FORM_ERROR } = SIGN_UP_ERROR_MESSAGE;
 
 export default function UserNameChangeModal({ visible, onClose }) {
+  const dispatch = useDispatch();
   const [userName, setUserName] = useState('');
   const [userNameResponseText, setUserNameResponseText] = useState('');
 
@@ -20,11 +22,15 @@ export default function UserNameChangeModal({ visible, onClose }) {
 
   const changeUserName = async () => {
     if (userNameResponseText === '') {
-      const status = await putUserName(userName);
-      if (status === 200) {
-        onClose();
-        location.reload();
-      }
+      dispatch(changeUserNameThunk({ name: userName }))
+        .unwrap()
+        .then(() => {
+          onClose();
+          location.reload();
+        })
+        .catch((error) => {
+          console.log('error', error);
+        });
     }
   };
 

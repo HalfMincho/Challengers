@@ -2,13 +2,15 @@ import { useState } from 'react';
 import Modal from '..';
 import Button from '@components/Button';
 import { validatePassword, validatePasswordCheck } from '@utils/checkResponse';
-import { putPassword } from '@utils/api/putPassword';
 import { SIGN_UP_ERROR_MESSAGE } from '@utils/constants/MESSAGE';
 import './style.scss';
+import { useDispatch } from 'react-redux';
+import { changeUserPasswordThunk } from '../../../features/account/AccountThunks';
 
 const { PASSWORD_FORM_ERROR, PASSWORD_CHECK_ERROR } = SIGN_UP_ERROR_MESSAGE;
 
 export default function PasswordChangeModal({ visible, onClose }) {
+  const dispatch = useDispatch();
   const [inputState, setInputState] = useState({
     password: '',
     newPassword: '',
@@ -56,11 +58,15 @@ export default function PasswordChangeModal({ visible, onClose }) {
       newPasswordResponseText === '' &&
       newPasswordCheckResponseText === ''
     ) {
-      const status = await putPassword(password, newPassword);
-      if (status === 200) {
-        onClose();
-        location.reload();
-      }
+      dispatch(changeUserPasswordThunk({ password: password, newPassword: newPassword }))
+        .unwrap()
+        .then(() => {
+          onClose();
+          location.reload();
+        })
+        .catch((error) => {
+          console.log('error', error);
+        });
     }
   };
 
