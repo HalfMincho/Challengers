@@ -10,7 +10,7 @@ import {
   ChallengeFromRequest,
 } from "./../types/challenge";
 import { category } from "../types/const";
-import { ChallengeSchema } from "../schema";
+import { ChallengeSchema, CertificationPostSchema } from "../schema";
 import { GetNameFromUUID } from "./account";
 
 const GetCategoryFromUUID = async (uuid: Buffer) => {
@@ -694,5 +694,54 @@ export const MakeChallengeComplete = async (req: express.Request) => {
 
       return { status: 500, result: { error: "exception_occurred" } };
     }
+  }
+};
+
+export const WriteCertificationArticle = async (req: express.Request) => {
+  const { body }: { body: { email: string; description: string } } = req;
+
+  const reqBodyValidation = await Validate(body, CertificationPostSchema);
+
+  if (!reqBodyValidation) {
+    return { status: 400, result: { error: "no_required_args" } };
+  }
+
+  const id = Number(req.params.id);
+  if (isNaN(id)) {
+    return { status: 400, result: { error: "invalid_id" } };
+  }
+
+  const checkChallengeExist = (await pool.execute(
+    `SELECT uuid FROM challenge WHERE id=${id}`,
+  )) as [result: Array<Object>, field: unknown];
+
+  if (checkChallengeExist[0].length < 1) {
+    return { status: 400, result: { error: "challenge_not_exists" } };
+  }
+
+  const [[{ uuid: challengeUUID }]] = checkChallengeExist as unknown as [
+    [{ uuid: Buffer }],
+  ];
+
+  const [[{ uuid: userUUID }]] = (await pool.execute(
+    `SELECT uuid FROM account WHERE email="${body.email}"`,
+  )) as unknown as [[{ uuid: Buffer }]];
+
+  try {
+    const buffer = Buffer.alloc(16);
+    uuidv4({}, buffer);
+    const rowUUID = buffer;
+
+    await pool.execute(
+      `INSERT INTO challenge_auth (uuid, submitter, challenge, description)
+    VALUE (?,?,?,?)`,
+      [rowUUID, userUUID, challengeUUID, body.description],
+    );
+
+    return { status: 200, result: { success: "post_successful" } };
+  } catch (e) {
+    console.error(e);
+
+    return { status: 500, result: { error: "exception_occurred" } };
   }
 };
