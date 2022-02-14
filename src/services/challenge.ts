@@ -552,13 +552,19 @@ export const JoinChallenge = async (req: express.Request) => {
   )) as unknown as [[{ "COUNT(*)": number }]];
 
   if (checkAccountChallengeRowExist === 0) {
-    await pool.execute(
-      `INSERT INTO account_challenge (account, challenge, is_participate)
+    try {
+      await pool.execute(
+        `INSERT INTO account_challenge (account, challenge, is_participate)
     VALUE (?,?,?)`,
-      [userUUID, challengeUUID, true],
-    );
+        [userUUID, challengeUUID, true],
+      );
 
-    return { status: 200, result: { participate: id } };
+      return { status: 200, result: { participate: id } };
+    } catch (e) {
+      console.error(e);
+
+      return { status: 500, result: { error: "exception_occurred" } };
+    }
   } else {
     try {
       await (await pool.getConnection()).beginTransaction();
@@ -653,13 +659,19 @@ export const MakeChallengeComplete = async (req: express.Request) => {
   )) as unknown as [[{ "COUNT(*)": number }]];
 
   if (checkAccountChallengeRowExist === 0) {
-    await pool.execute(
-      `INSERT INTO account_challenge (account, challenge, is_complete)
+    try {
+      await pool.execute(
+        `INSERT INTO account_challenge (account, challenge, is_complete)
     VALUE (?,?,?)`,
-      [userUUID, challengeUUID, true],
-    );
+        [userUUID, challengeUUID, true],
+      );
 
-    return { status: 200, result: { complete: id } };
+      return { status: 200, result: { complete: id } };
+    } catch (e) {
+      console.error(e);
+
+      return { status: 500, result: { error: "exception_occurred" } };
+    }
   } else {
     try {
       await (await pool.getConnection()).beginTransaction();
