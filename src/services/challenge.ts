@@ -24,7 +24,11 @@ const GetCategoryFromUUID = async (uuid: Buffer) => {
   return name;
 };
 
-export const GetChallenge = async (id: number) => {
+export const GetChallenge = async (req: express.Request) => {
+  const { body }: { body: { email?: string } } = req;
+
+  const id = Number(req.params.id);
+
   if (isNaN(id)) {
     return { status: 400, result: { error: "invalid_id" } };
   }
@@ -37,16 +41,20 @@ export const GetChallenge = async (id: number) => {
     return { status: 400, result: { error: "challenge_not_exists" } };
   }
 
+  type ChallengeFromDBWithUUID = ChallengeFromDB & {
+    uuid: Buffer;
+  };
+
   const [row] =
-    (await pool.execute(`SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+    (await pool.execute(`SELECT id, uuid, submitter, category, name, auth_way, auth_day, auth_count_in_day,
     auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
     start_at, end_at, cost, description, reg_date, views FROM challenge WHERE id=${id}`)) as [
-      row: ChallengeFromDB[],
+      row: ChallengeFromDBWithUUID[],
       field: unknown,
     ];
 
   const refinedRow = await Promise.all(
-    row.map(async (challenge: ChallengeFromDB) => {
+    row.map(async (challenge: ChallengeFromDBWithUUID) => {
       const [[{ name: categoryName }]] = (await pool.execute(
         `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
           challenge.category,
@@ -55,8 +63,31 @@ export const GetChallenge = async (id: number) => {
 
       const username = await GetNameFromUUID(challenge.submitter);
 
+      const { uuid, ...challengeWithoutUUID } = challenge;
+
+      if (body.email !== undefined) {
+        const [[{ uuid: userUUID }]] = (await pool.execute(
+          `SELECT uuid FROM account WHERE email="${body.email}"`,
+        )) as unknown as [[{ uuid: Buffer }]];
+
+        const [certificationPostRow] = (await pool.execute(
+          `SELECT id FROM challenge_auth WHERE submitter=UNHEX("${uuidStringify(
+            userUUID,
+          ).replace(/-/gi, "")}") AND challenge=UNHEX("${uuidStringify(
+            uuid,
+          ).replace(/-/gi, "")}")`,
+        )) as [certificationPostRow: { id: number }[], field: unknown];
+
+        return {
+          ...challengeWithoutUUID,
+          category: categoryName,
+          submitter: username,
+          cert_post: certificationPostRow,
+        };
+      }
+
       return {
-        ...challenge,
+        ...challengeWithoutUUID,
         category: categoryName,
         submitter: username,
       };

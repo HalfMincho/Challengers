@@ -18,7 +18,7 @@ import {
 } from "../services/challenge";
 import { Category } from "../types/challenge";
 
-import { AuthJWT } from "../services/middlewares/auth";
+import { AuthJWT, AuthOptionalJWT } from "../services/middlewares/auth";
 import { wrap } from "../services/utils/wrapper";
 
 const challengeRouter = express.Router();
@@ -98,8 +98,9 @@ challengeRouter.get(
 
 challengeRouter.get(
   "/:id",
+  AuthOptionalJWT,
   wrap(async (req: express.Request, res: express.Response) => {
-    const { status, result } = await GetChallenge(Number(req.params.id));
+    const { status, result } = await GetChallenge(req);
     res.status(status);
     res.send(result);
   }),
@@ -136,7 +137,7 @@ challengeRouter.delete(
 );
 
 challengeRouter.post(
-  "/participate/:id",
+  "/:id/participate",
   AuthJWT,
   wrap(async (req: express.Request, res: express.Response) => {
     const { status, result } = await JoinChallenge(req);
@@ -146,7 +147,7 @@ challengeRouter.post(
 );
 
 challengeRouter.post(
-  "/complete/:id",
+  "/:id/complete",
   AuthJWT,
   wrap(async (req: express.Request, res: express.Response) => {
     const { status, result } = await MakeChallengeComplete(req);
@@ -156,7 +157,7 @@ challengeRouter.post(
 );
 
 challengeRouter.post(
-  "/certification/:id",
+  "/:id/certification",
   AuthJWT,
   wrap(async (req: express.Request, res: express.Response) => {
     const { status, result } = await WriteCertificationArticle(req);
