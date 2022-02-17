@@ -8,6 +8,7 @@ import {
   VerifyRegisterToken,
   ModifyUsername,
   ModifyPassword,
+  GetUserInfo,
 } from "../services/account";
 import { AuthJWT } from "../services/middlewares/auth";
 import { wrap } from "../services/utils/wrapper";
@@ -74,6 +75,16 @@ accountRouter.put(
   AuthJWT,
   wrap(async (req: express.Request, res: express.Response) => {
     const { status, result } = await ModifyPassword(req);
+    res.status(status);
+    res.send(result);
+  }),
+);
+
+accountRouter.get(
+  "/user/info",
+  AuthJWT,
+  wrap(async (req: express.Request, res: express.Response) => {
+    const { status, result } = await GetUserInfo(req);
     res.status(status);
     res.send(result);
   }),
