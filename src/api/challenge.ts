@@ -15,6 +15,7 @@ import {
   GetCompleteChallenge,
   MakeChallengeComplete,
   WriteCertificationArticle,
+  GetCertificationArticle,
 } from "../services/challenge";
 import { Category } from "../types/challenge";
 
@@ -161,6 +162,16 @@ challengeRouter.post(
   AuthJWT,
   wrap(async (req: express.Request, res: express.Response) => {
     const { status, result } = await WriteCertificationArticle(req);
+    res.status(status);
+    res.send(result);
+  }),
+);
+
+challengeRouter.get(
+  "/certification/:id",
+  AuthJWT,
+  wrap(async (req: express.Request, res: express.Response) => {
+    const { status, result } = await GetCertificationArticle(req);
     res.status(status);
     res.send(result);
   }),
