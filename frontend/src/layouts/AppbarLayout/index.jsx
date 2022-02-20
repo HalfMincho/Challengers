@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { BsBookmark, BsCart3, BsPerson } from 'react-icons/bs';
 
 import Button from '@components/Button';
 import Searchbar from '@components/Searchbar';
 import SignInModal from '@components/Modal/SignIn';
-
 import './style.scss';
 
 function AppbarContainerLink({ category, onClick }) {
@@ -18,20 +18,55 @@ function AppbarContainerLink({ category, onClick }) {
 export default function AppbarLayout({ children }) {
   const navigate = useNavigate();
   const category = ['건강', '역량', '정서', '자산', '생활', '취미'];
-  const [signInModalVisible, setSignInModalVisible] = useState(false);
-
-  const openModal = () => {
-    setSignInModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setSignInModalVisible(false);
-  };
-
   const goResult = (name) => {
     navigate(`/list/search?category=${name}`);
     location.reload();
   };
+
+  const [signInModalVisible, setSignInModalVisible] = useState(false);
+  const openModal = () => {
+    setSignInModalVisible(true);
+  };
+  const closeModal = () => {
+    setSignInModalVisible(false);
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  const LogoutStatusButtons = (
+    <>
+      <div className="appbar__container--buttons">
+        <Link to="/signup">
+          <Button color="gray" outline>
+            회원가입
+          </Button>
+        </Link>
+        <Button onClick={openModal}>로그인</Button>
+      </div>
+      {signInModalVisible && <SignInModal visible={signInModalVisible} onClose={closeModal} />}
+    </>
+  );
+
+  const LoginStatusButtons = (
+    <>
+      <div className="appbar__container--buttons">
+        <div className="button">
+          <button name="bookmark">
+            <BsBookmark />
+          </button>
+        </div>
+        <div className="button">
+          <button name="cart">
+            <BsCart3 />
+          </button>
+        </div>
+        <div className="button">
+          <button name="profile">
+            <BsPerson />
+          </button>
+        </div>
+      </div>
+    </>
+  );
 
   return (
     <div className="layout__root">
@@ -41,20 +76,15 @@ export default function AppbarLayout({ children }) {
             <img alt="logo" src="/assets/logo_appbar.png" height={58} width={260} />
           </Link>
         </div>
-        {category.map((name, index) => (
-          <AppbarContainerLink category={name} key={index} onClick={() => goResult(name)} />
-        ))}
-        <Searchbar />
-        <div className="appbar__container--buttons">
-          <Link to="/signup">
-            <Button color="gray" outline>
-              회원가입
-            </Button>
-          </Link>
-          <Button onClick={openModal}>로그인</Button>
+        <div className="appbar__container--category">
+          {category.map((name, index) => (
+            <AppbarContainerLink category={name} key={index} onClick={() => goResult(name)} />
+          ))}
         </div>
+        <Searchbar />
+        {/* {LogoutStatusButtons} */}
+        {LoginStatusButtons}
       </div>
-      {signInModalVisible && <SignInModal visible={signInModalVisible} onClose={closeModal} />}
       <div className="layout__content--root">{children}</div>
       <div className="footer__space"></div>
     </div>

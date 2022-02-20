@@ -1,5 +1,7 @@
+@import '@common/styles/base';
+
 .layout__root {
-  max-width: 1200px;
+  max-width: 1000px;
   width: 100%;
   margin: 0 auto;
   padding-top: 24px;
@@ -11,6 +13,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+    padding: 0 0.8rem;
 
     img {
       display: block;
@@ -22,8 +25,22 @@
       cursor: pointer;
     }
 
-    .appbar__container--buttons button {
-      margin-left: 1rem;
+    .appbar__container--category {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .appbar__container--buttons {
+      display: flex;
+      justify-content: space-between;
+      width: 8rem;
+      button {
+        cursor: pointer;
+        svg {
+          color: $brand;
+          font-size: 1.3rem;
+        }
+      }
     }
   }
 
@@ -35,5 +52,19 @@
     flex-grow: 0;
     flex-basis: 230px;
     flex-shrink: 1;
+  }
+
+  @media screen and (max-width: 900px) {
+    .appbar__container--category {
+      margin: 0;
+      width: 15rem;
+    }
+  }
+
+  @media screen and (min-width: 900px) {
+    .appbar__container--category {
+      margin: 0 2rem;
+      width: 25rem;
+    }
   }
 }
