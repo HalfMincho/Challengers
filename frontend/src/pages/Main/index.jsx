@@ -11,9 +11,7 @@ export default function MainPage() {
         <div className="listTitle">
           <p>인기 챌린지</p>
           <Link to="/list/popular">
-            <button>
-              <FaChevronRight />
-            </button>
+            <FaChevronRight />
           </Link>
         </div>
         <CardList type="popular" preview />
@@ -22,9 +20,7 @@ export default function MainPage() {
         <div className="listTitle">
           <p>신규 챌린지</p>
           <Link to="/list/recent">
-            <button>
-              <FaChevronRight />
-            </button>
+            <FaChevronRight />
           </Link>
         </div>
         <CardList type="recent" preview />

@@ -2,6 +2,7 @@
 
 .layout__root {
   max-width: 1000px;
+  min-width: 730px;
   width: 100%;
   margin: 0 auto;
   padding-top: 24px;
@@ -54,14 +55,14 @@
     flex-shrink: 1;
   }
 
-  @media screen and (max-width: 900px) {
+  @media screen and (max-width: 960px) {
     .appbar__container--category {
       margin: 0;
-      width: 15rem;
+      width: 14rem;
     }
   }
 
-  @media screen and (min-width: 900px) {
+  @media screen and (min-width: 960px) {
     .appbar__container--category {
       margin: 0 2rem;
       width: 25rem;

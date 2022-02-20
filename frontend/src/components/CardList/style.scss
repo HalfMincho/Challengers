@@ -1,5 +1,17 @@
 .CardList {
   display: flex;
-  flex-wrap: wrap;
   margin: 0.5rem 0 2rem 0;
+}
+
+@media screen and (max-width: 1000px) {
+  .CardList {
+    flex-direction: column;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  .CardList {
+    flex-wrap: wrap;
+    width: 60.5rem;
+  }
 }

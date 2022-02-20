@@ -1,9 +1,9 @@
 @import '@common/styles/base';
 
 .Card {
-  width: 265px;
+  width: 14rem;
   height: 250px;
-  margin: 0.7rem;
+  margin: 0.5rem;
   padding: 1rem;
   border: 1px solid $line-gray;
   border-radius: 5px;
@@ -18,5 +18,12 @@
   .name {
     font-weight: 500;
     font-size: 1.1rem;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .Card {
+    width: 100%;
+    height: fit-content;
   }
 }
