@@ -6,6 +6,8 @@ export const API_URL = {
     POST_SIGN_IN: '/account/login',
     PUT_USER_NAME: '/account/user/name',
     PUT_USER_PASSWORD: '/account/user/password',
+    // TODO: 백엔드에 따라 url 변경 필요
+    GET_USER: '/account/user',
   },
   CHALLENGE: {
     CHALLENGE_BY_ID: (id) => `/challenge/${id}`,

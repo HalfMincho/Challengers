@@ -1,10 +1,10 @@
 import { api } from '@utils/axiosConfig';
 import { API_URL } from '@constants/API_URL';
 
-export const postSignUp = async (id) => {
+export const getUserInfo = async () => {
   try {
-    const response = await api.delete(API_URL.CHALLENGE.CHALLENGE_BY_ID(id));
-    return response.status;
+    const response = await api.get(API_URL.USER.GET_USER);
+    return response;
   } catch (error) {
     console.log('error', error);
     return Promise.reject(error);

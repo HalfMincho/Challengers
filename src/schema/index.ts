@@ -1,5 +1,5 @@
 export { Schema } from "./schema";
-export { ChallengeSchema } from "./challenge";
+export { ChallengeSchema, CertificationPostSchema } from "./challenge";
 export {
   RegisterEmailSchema,
   RegisterTokenVerificationSchema,

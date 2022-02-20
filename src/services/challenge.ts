@@ -10,10 +10,25 @@ import {
   ChallengeFromRequest,
 } from "./../types/challenge";
 import { category } from "../types/const";
-import { ChallengeSchema } from "../schema";
+import { ChallengeSchema, CertificationPostSchema } from "../schema";
 import { GetNameFromUUID } from "./account";
 
-export const GetChallenge = async (id: number) => {
+const GetCategoryFromUUID = async (uuid: Buffer) => {
+  const [[{ name }]] = (await pool.execute(
+    `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(uuid).replace(
+      /-/gi,
+      "",
+    )}")`,
+  )) as unknown as [[{ name: string }]];
+
+  return name;
+};
+
+export const GetChallenge = async (req: express.Request) => {
+  const { body }: { body: { email?: string } } = req;
+
+  const id = Number(req.params.id);
+
   if (isNaN(id)) {
     return { status: 400, result: { error: "invalid_id" } };
   }
@@ -23,19 +38,23 @@ export const GetChallenge = async (id: number) => {
   )) as [result: Array<Object>, field: unknown];
 
   if (result[0].length < 1) {
-    return { status: 400, result: { error: "challenge_not_exists" } };
+    return { status: 404, result: { error: "challenge_not_exists" } };
   }
 
+  type ChallengeFromDBWithUUID = ChallengeFromDB & {
+    uuid: Buffer;
+  };
+
   const [row] =
-    (await pool.execute(`SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+    (await pool.execute(`SELECT id, uuid, submitter, category, name, auth_way, auth_day, auth_count_in_day,
     auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
     start_at, end_at, cost, description, reg_date, views FROM challenge WHERE id=${id}`)) as [
-      row: ChallengeFromDB[],
+      row: ChallengeFromDBWithUUID[],
       field: unknown,
     ];
 
   const refinedRow = await Promise.all(
-    row.map(async (challenge: ChallengeFromDB) => {
+    row.map(async (challenge: ChallengeFromDBWithUUID) => {
       const [[{ name: categoryName }]] = (await pool.execute(
         `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
           challenge.category,
@@ -44,8 +63,31 @@ export const GetChallenge = async (id: number) => {
 
       const username = await GetNameFromUUID(challenge.submitter);
 
+      const { uuid, ...challengeWithoutUUID } = challenge;
+
+      if (body.email !== undefined) {
+        const [[{ uuid: userUUID }]] = (await pool.execute(
+          `SELECT uuid FROM account WHERE email="${body.email}"`,
+        )) as unknown as [[{ uuid: Buffer }]];
+
+        const [certificationArticleRow] = (await pool.execute(
+          `SELECT id FROM challenge_auth WHERE submitter=UNHEX("${uuidStringify(
+            userUUID,
+          ).replace(/-/gi, "")}") AND challenge=UNHEX("${uuidStringify(
+            uuid,
+          ).replace(/-/gi, "")}")`,
+        )) as [certificationArticleRow: { id: number }[], field: unknown];
+
+        return {
+          ...challengeWithoutUUID,
+          category: categoryName,
+          submitter: username,
+          cert_article: certificationArticleRow,
+        };
+      }
+
       return {
-        ...challenge,
+        ...challengeWithoutUUID,
         category: categoryName,
         submitter: username,
       };
@@ -208,6 +250,12 @@ export const PostChallenge = async (req: express.Request) => {
       JSON.parse(JSON.stringify(rows[0])),
     )[0];
 
+    await pool.execute(
+      `INSERT INTO account_challenge (account, challenge, is_open)
+    VALUE (?,?,?)`,
+      [userUUID, challengeUUID, true],
+    );
+
     await (await pool.getConnection()).commit();
 
     return { status: 200, result: { created: created_challenge_id } };
@@ -230,7 +278,7 @@ export const PutChallenge = async (id: number, req: express.Request) => {
   )) as [result: Array<Object>, field: unknown];
 
   if (result[0].length < 1) {
-    return { status: 400, result: { error: "challenge_not_exists" } };
+    return { status: 404, result: { error: "challenge_not_exists" } };
   }
 
   const { body }: { body: ChallengeFromRequest } = req;
@@ -319,7 +367,7 @@ export const DeleteChallenge = async (id: number) => {
   )) as [result: Array<Object>, field: unknown];
 
   if (result[0].length < 1) {
-    return { status: 400, result: { error: "challenge_not_exists" } };
+    return { status: 404, result: { error: "challenge_not_exists" } };
   }
 
   try {
@@ -427,4 +475,337 @@ export const GetChallengeWithCategory = async (
   );
 
   return { status: 200, result: refinedRows };
+};
+
+export const GetOpenChallenge = async (req: express.Request) => {
+  const { body }: { body: { email: string } } = req;
+
+  const [[{ uuid: userUUID }]] = (await pool.execute(
+    `SELECT uuid FROM account WHERE email="${body.email}"`,
+  )) as unknown as [[{ uuid: Buffer }]];
+
+  const [challengeUUIDRow] = (await pool.execute(
+    `SELECT challenge FROM account_challenge WHERE account=UNHEX("${uuidStringify(
+      userUUID,
+    ).replace(/-/gi, "")}") AND is_open=true`,
+  )) as [challengeUUID: { challenge: Buffer }[], field: unknown];
+
+  const refinedRows = await Promise.all(
+    challengeUUIDRow.map(async (singleChallenge: { challenge: Buffer }) => {
+      const [[challenge]] = (await pool.execute(
+        `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+    auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
+    start_at, end_at, cost, description, reg_date, views FROM challenge WHERE uuid=UNHEX("${uuidStringify(
+      singleChallenge.challenge,
+    ).replace(/-/gi, "")}")`,
+      )) as unknown as [[challenge: ChallengeFromDB]];
+
+      const username = await GetNameFromUUID(challenge.submitter);
+      const categoryName = await GetCategoryFromUUID(challenge.category);
+
+      return {
+        ...challenge,
+        category: categoryName,
+        submitter: username,
+      };
+    }),
+  );
+
+  return { status: 200, result: refinedRows };
+};
+
+export const GetParticipateChallenge = async (req: express.Request) => {
+  const { body }: { body: { email: string } } = req;
+
+  const [[{ uuid: userUUID }]] = (await pool.execute(
+    `SELECT uuid FROM account WHERE email="${body.email}"`,
+  )) as unknown as [[{ uuid: Buffer }]];
+
+  const [challengeUUIDRow] = (await pool.execute(
+    `SELECT challenge FROM account_challenge WHERE account=UNHEX("${uuidStringify(
+      userUUID,
+    ).replace(/-/gi, "")}") AND is_participate=true`,
+  )) as [challengeUUID: { challenge: Buffer }[], field: unknown];
+
+  const refinedRows = await Promise.all(
+    challengeUUIDRow.map(async (singleChallenge: { challenge: Buffer }) => {
+      const [[challenge]] = (await pool.execute(
+        `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+    auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
+    start_at, end_at, cost, description, reg_date, views FROM challenge WHERE uuid=UNHEX("${uuidStringify(
+      singleChallenge.challenge,
+    ).replace(/-/gi, "")}")`,
+      )) as unknown as [[challenge: ChallengeFromDB]];
+
+      const username = await GetNameFromUUID(challenge.submitter);
+      const categoryName = await GetCategoryFromUUID(challenge.category);
+
+      return {
+        ...challenge,
+        category: categoryName,
+        submitter: username,
+      };
+    }),
+  );
+
+  return { status: 200, result: refinedRows };
+};
+
+export const JoinChallenge = async (req: express.Request) => {
+  const { body }: { body: { email: string } } = req;
+  const id = Number(req.params.id);
+  if (isNaN(id)) {
+    return { status: 400, result: { error: "invalid_id" } };
+  }
+
+  const checkChallengeExist = (await pool.execute(
+    `SELECT uuid FROM challenge WHERE id=${id}`,
+  )) as [result: Array<Object>, field: unknown];
+
+  if (checkChallengeExist[0].length < 1) {
+    return { status: 404, result: { error: "challenge_not_exists" } };
+  }
+
+  const [[{ uuid: challengeUUID }]] = checkChallengeExist as unknown as [
+    [{ uuid: Buffer }],
+  ];
+
+  const [[{ uuid: userUUID }]] = (await pool.execute(
+    `SELECT uuid FROM account WHERE email="${body.email}"`,
+  )) as unknown as [[{ uuid: Buffer }]];
+
+  const [[{ "COUNT(*)": checkAccountChallengeRowExist }]] = (await pool.execute(
+    `SELECT COUNT(*) FROM account_challenge WHERE challenge=UNHEX("${uuidStringify(
+      challengeUUID,
+    ).replace(/-/gi, "")}") AND account=UNHEX("${uuidStringify(
+      userUUID,
+    ).replace(/-/gi, "")}")`,
+  )) as unknown as [[{ "COUNT(*)": number }]];
+
+  if (checkAccountChallengeRowExist === 0) {
+    try {
+      await pool.execute(
+        `INSERT INTO account_challenge (account, challenge, is_participate)
+    VALUE (?,?,?)`,
+        [userUUID, challengeUUID, true],
+      );
+
+      return { status: 200, result: { participate: id } };
+    } catch (e) {
+      console.error(e);
+
+      return { status: 500, result: { error: "exception_occurred" } };
+    }
+  } else {
+    try {
+      await (await pool.getConnection()).beginTransaction();
+
+      await pool.execute(
+        `UPDATE account_challenge SET is_participate=true WHERE challenge=UNHEX("${uuidStringify(
+          challengeUUID,
+        ).replace(/-/gi, "")}") AND account=UNHEX("${uuidStringify(
+          userUUID,
+        ).replace(/-/gi, "")}")`,
+      );
+
+      await (await pool.getConnection()).commit();
+
+      return { status: 200, result: { participate: id } };
+    } catch (e) {
+      await (await pool.getConnection()).rollback();
+
+      console.error(e);
+
+      return { status: 500, result: { error: "exception_occurred" } };
+    }
+  }
+};
+
+export const GetCompleteChallenge = async (req: express.Request) => {
+  const { body }: { body: { email: string } } = req;
+
+  const [[{ uuid: userUUID }]] = (await pool.execute(
+    `SELECT uuid FROM account WHERE email="${body.email}"`,
+  )) as unknown as [[{ uuid: Buffer }]];
+
+  const [challengeUUIDRow] = (await pool.execute(
+    `SELECT challenge FROM account_challenge WHERE account=UNHEX("${uuidStringify(
+      userUUID,
+    ).replace(/-/gi, "")}") AND is_complete=true`,
+  )) as [challengeUUID: { challenge: Buffer }[], field: unknown];
+
+  const refinedRows = await Promise.all(
+    challengeUUIDRow.map(async (singleChallenge: { challenge: Buffer }) => {
+      const [[challenge]] = (await pool.execute(
+        `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
+    auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
+    start_at, end_at, cost, description, reg_date, views FROM challenge WHERE uuid=UNHEX("${uuidStringify(
+      singleChallenge.challenge,
+    ).replace(/-/gi, "")}")`,
+      )) as unknown as [[challenge: ChallengeFromDB]];
+
+      const username = await GetNameFromUUID(challenge.submitter);
+      const categoryName = await GetCategoryFromUUID(challenge.category);
+
+      return {
+        ...challenge,
+        category: categoryName,
+        submitter: username,
+      };
+    }),
+  );
+
+  return { status: 200, result: refinedRows };
+};
+
+export const MakeChallengeComplete = async (req: express.Request) => {
+  const { body }: { body: { email: string } } = req;
+  const id = Number(req.params.id);
+  if (isNaN(id)) {
+    return { status: 400, result: { error: "invalid_id" } };
+  }
+
+  const checkChallengeExist = (await pool.execute(
+    `SELECT uuid FROM challenge WHERE id=${id}`,
+  )) as [result: Array<Object>, field: unknown];
+
+  if (checkChallengeExist[0].length < 1) {
+    return { status: 404, result: { error: "challenge_not_exists" } };
+  }
+
+  const [[{ uuid: challengeUUID }]] = checkChallengeExist as unknown as [
+    [{ uuid: Buffer }],
+  ];
+
+  const [[{ uuid: userUUID }]] = (await pool.execute(
+    `SELECT uuid FROM account WHERE email="${body.email}"`,
+  )) as unknown as [[{ uuid: Buffer }]];
+
+  const [[{ "COUNT(*)": checkAccountChallengeRowExist }]] = (await pool.execute(
+    `SELECT COUNT(*) FROM account_challenge WHERE challenge=UNHEX("${uuidStringify(
+      challengeUUID,
+    ).replace(/-/gi, "")}") AND account=UNHEX("${uuidStringify(
+      userUUID,
+    ).replace(/-/gi, "")}")`,
+  )) as unknown as [[{ "COUNT(*)": number }]];
+
+  if (checkAccountChallengeRowExist === 0) {
+    try {
+      await pool.execute(
+        `INSERT INTO account_challenge (account, challenge, is_complete)
+    VALUE (?,?,?)`,
+        [userUUID, challengeUUID, true],
+      );
+
+      return { status: 200, result: { complete: id } };
+    } catch (e) {
+      console.error(e);
+
+      return { status: 500, result: { error: "exception_occurred" } };
+    }
+  } else {
+    try {
+      await (await pool.getConnection()).beginTransaction();
+
+      await pool.execute(
+        `UPDATE account_challenge SET is_complete=true WHERE challenge=UNHEX("${uuidStringify(
+          challengeUUID,
+        ).replace(/-/gi, "")}") AND account=UNHEX("${uuidStringify(
+          userUUID,
+        ).replace(/-/gi, "")}")`,
+      );
+
+      await (await pool.getConnection()).commit();
+
+      return { status: 200, result: { complete: id } };
+    } catch (e) {
+      await (await pool.getConnection()).rollback();
+
+      console.error(e);
+
+      return { status: 500, result: { error: "exception_occurred" } };
+    }
+  }
+};
+
+export const WriteCertificationArticle = async (req: express.Request) => {
+  const { body }: { body: { email: string; description: string } } = req;
+
+  const reqBodyValidation = await Validate(body, CertificationPostSchema);
+
+  if (!reqBodyValidation) {
+    return { status: 400, result: { error: "no_required_args" } };
+  }
+
+  const id = Number(req.params.id);
+  if (isNaN(id)) {
+    return { status: 400, result: { error: "invalid_id" } };
+  }
+
+  const checkChallengeExist = (await pool.execute(
+    `SELECT uuid FROM challenge WHERE id=${id}`,
+  )) as [result: Array<Object>, field: unknown];
+
+  if (checkChallengeExist[0].length < 1) {
+    return { status: 404, result: { error: "challenge_not_exists" } };
+  }
+
+  const [[{ uuid: challengeUUID }]] = checkChallengeExist as unknown as [
+    [{ uuid: Buffer }],
+  ];
+
+  const [[{ uuid: userUUID }]] = (await pool.execute(
+    `SELECT uuid FROM account WHERE email="${body.email}"`,
+  )) as unknown as [[{ uuid: Buffer }]];
+
+  try {
+    const buffer = Buffer.alloc(16);
+    uuidv4({}, buffer);
+    const rowUUID = buffer;
+
+    await pool.execute(
+      `INSERT INTO challenge_auth (uuid, submitter, challenge, description)
+    VALUE (?,?,?,?)`,
+      [rowUUID, userUUID, challengeUUID, body.description],
+    );
+
+    return { status: 200, result: { success: "post_successful" } };
+  } catch (e) {
+    console.error(e);
+
+    return { status: 500, result: { error: "exception_occurred" } };
+  }
+};
+
+export const GetCertificationArticle = async (req: express.Request) => {
+  const { body }: { body: { email: string } } = req;
+
+  const id = Number(req.params.id);
+
+  if (isNaN(id)) {
+    return { status: 400, result: { error: "invalid_id" } };
+  }
+
+  const result = (await pool.execute(
+    `SELECT id FROM challenge_auth WHERE id=${id}`,
+  )) as [result: Array<Object>, field: unknown];
+
+  if (result[0].length < 1) {
+    return { status: 404, result: { error: "cert_article_not_exists" } };
+  }
+
+  const [[{ uuid: userUUID }]] = (await pool.execute(
+    `SELECT uuid FROM account WHERE email="${body.email}"`,
+  )) as unknown as [[{ uuid: Buffer }]];
+
+  const [challengeAuthRow] = (await pool.execute(
+    `SELECT description, created_at FROM challenge_auth WHERE submitter=UNHEX("${uuidStringify(
+      userUUID,
+    ).replace(/-/gi, "")}") AND id=${id}`,
+  )) as [
+    challengeAuthRow: { description: string; created_at: string }[],
+    field: unknown,
+  ];
+
+  return { status: 200, result: challengeAuthRow[0] };
 };

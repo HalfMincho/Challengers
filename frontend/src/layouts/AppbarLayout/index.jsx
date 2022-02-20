@@ -6,6 +6,9 @@ import Button from '@components/Button';
 import Searchbar from '@components/Searchbar';
 import SignInModal from '@components/Modal/SignIn';
 import './style.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetAccessToken, resetRefreshToken } from '@utils/helpers/tokensHelper';
+import accountSlice from '../../features/account/AccountSlice';
 
 function AppbarContainerLink({ category, onClick }) {
   return (
@@ -17,6 +20,7 @@ function AppbarContainerLink({ category, onClick }) {
 
 export default function AppbarLayout({ children }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const category = ['건강', '역량', '정서', '자산', '생활', '취미'];
   const goResult = (name) => {
     navigate(`/list/search?category=${name}`);
@@ -24,6 +28,8 @@ export default function AppbarLayout({ children }) {
   };
 
   const [signInModalVisible, setSignInModalVisible] = useState(false);
+  const account = useSelector((state) => state.account);
+
   const openModal = () => {
     setSignInModalVisible(true);
   };
@@ -45,6 +51,13 @@ export default function AppbarLayout({ children }) {
       {signInModalVisible && <SignInModal visible={signInModalVisible} onClose={closeModal} />}
     </>
   );
+
+  const handleLogout = () => {
+    resetAccessToken();
+    resetRefreshToken();
+    dispatch(accountSlice.actions.setLoggedOut());
+    navigate('/');
+  };
 
   const LoginStatusButtons = (
     <>
@@ -82,6 +95,18 @@ export default function AppbarLayout({ children }) {
           ))}
         </div>
         <Searchbar />
+        <div className="appbar__container--buttons">
+          <Link to="/signup">
+            <Button color="gray" outline>
+              회원가입
+            </Button>
+          </Link>
+          {account.isLoggedIn ? (
+            <Button onClick={handleLogout}>로그아웃</Button>
+          ) : (
+            <Button onClick={openModal}>로그인</Button>
+          )}
+        </div>
         {/* {LogoutStatusButtons} */}
         {LoginStatusButtons}
       </div>

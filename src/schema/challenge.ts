@@ -36,3 +36,8 @@ export const ChallengeSchema: Schema = {
     "description",
   ],
 };
+
+export const CertificationPostSchema: Schema = {
+  fields: { email: "string", description: "string" },
+  required: ["description"],
+};
