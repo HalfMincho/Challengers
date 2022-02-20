@@ -466,3 +466,13 @@ export const ModifyPassword = async (req: express.Request) => {
     }
   }
 };
+
+export const GetUserInfo = async (req: express.Request) => {
+  const { body }: { body: { email: string } } = req;
+
+  const [[{ name: userName }]] = (await pool.execute(
+    `SELECT name FROM account WHERE email="${body.email}"`,
+  )) as unknown as [[{ name: string }]];
+
+  return { status: 200, result: { name: userName, email: body.email } };
+};
