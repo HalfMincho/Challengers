@@ -1,9 +1,9 @@
 import { FaChevronRight } from 'react-icons/fa';
 import './style.scss';
 
-export default function DropDown({ title, content, signOut }) {
+export default function DropDown({ title, content, visible, signOut }) {
   return (
-    <div className="DropDownWrapper">
+    <div className={`DropDownWrapper ${visible ? 'visible' : 'none'}`}>
       {title && (
         <div className="menuHeader">
           <p className="title">{title}</p>

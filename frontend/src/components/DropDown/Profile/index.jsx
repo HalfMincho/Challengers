@@ -1,7 +1,7 @@
 import DropDown from '..';
 import './style.scss';
 
-export default function Profile() {
+export default function Profile({ visible }) {
   const menuList = (
     <ul className="menuListWrapper">
       <li>챌린지 현황</li>
@@ -10,5 +10,5 @@ export default function Profile() {
     </ul>
   );
 
-  return <DropDown content={menuList} signOut />;
+  return <DropDown content={menuList} visible={visible} signOut />;
 }

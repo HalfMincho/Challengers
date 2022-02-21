@@ -8,7 +8,8 @@
 			  "@pages/*": ["src/pages/*"],
 			  "@utils/*": ["src/utils/*"],
         "@constants/*": ["src/utils/constants/*"],
-        "@api/*": ["src/utils/api/*"]
+        "@api/*": ["src/utils/api/*"],
+        "@features/*": ["src/features/*"]
 		  }
     }
 }

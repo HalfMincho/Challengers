@@ -3,7 +3,7 @@ import Button from '@components/Button';
 import DropDown from '..';
 import './style.scss';
 
-export default function Cart() {
+export default function Cart({ visible }) {
   const tempChallengeInfo = [
     {
       name: '블로그 글쓰기',
@@ -46,5 +46,5 @@ export default function Cart() {
     </div>
   );
 
-  return <DropDown title="장바구니" content={cartList} />;
+  return <DropDown title="장바구니" content={cartList} visible={visible} />;
 }

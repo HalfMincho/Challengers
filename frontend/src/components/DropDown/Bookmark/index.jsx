@@ -2,7 +2,7 @@ import Box from '@components/Box';
 import DropDown from '..';
 import './style.scss';
 
-export default function Bookmark() {
+export default function Bookmark({ visible }) {
   const tempChallengeInfo = [
     {
       name: '블로그 글쓰기',
@@ -40,5 +40,5 @@ export default function Bookmark() {
     </ul>
   );
 
-  return <DropDown title="저장한 챌린지" content={bookmarkList} />;
+  return <DropDown title="저장한 챌린지" content={bookmarkList} visible={visible} />;
 }

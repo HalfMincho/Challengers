@@ -1,21 +1,30 @@
 @import '@common/styles/base';
 
 .DropDownWrapper {
-  top: 100px;
-  left: 100px;
-  position: relative;
+  top: 2.4rem;
+  right: -0.6rem;
+  position: absolute;
   background: $bg-white;
-  display: flex;
   flex-direction: column;
+  width: min-content;
   height: fit-content;
   border: 1px solid $line-gray;
   border-radius: 5px;
   padding-top: 10px;
+  box-shadow: 1px 1px 1px $line-gray;
+  z-index: 1;
+
+  &.visible {
+    display: flex;
+  }
+  &.none {
+    display: none;
+  }
 
   &:after,
   &:before {
     bottom: 100%;
-    left: 80%;
+    left: 90%;
     border: solid transparent;
     content: '';
     height: 0;
@@ -45,11 +54,9 @@
       font-weight: 500;
     }
     svg {
+      font-size: 0.7rem !important;
       margin-top: 7px;
-      color: $font-gray;
-      &:hover {
-        cursor: pointer;
-      }
+      color: $font-gray !important;
     }
   }
 

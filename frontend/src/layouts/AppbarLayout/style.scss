@@ -2,7 +2,7 @@
 
 .layout__root {
   max-width: 1000px;
-  min-width: 730px;
+  min-width: 735px;
   width: 100%;
   margin: 0 auto;
   padding-top: 24px;
@@ -22,25 +22,45 @@
       height: 30px;
     }
 
-    .appbar__link {
-      cursor: pointer;
-    }
-
     .appbar__container--category {
       display: flex;
       justify-content: space-between;
+      .appbar__container--link {
+        list-style: none;
+        padding-left: 0;
+        .appbar__link {
+          cursor: pointer;
+          &:hover {
+            color: $brand;
+          }
+        }
+      }
     }
 
     .appbar__container--buttons {
       display: flex;
       justify-content: space-between;
-      width: 8rem;
-      button {
-        cursor: pointer;
-        svg {
-          color: $brand;
-          font-size: 1.3rem;
+      list-style: none;
+      padding-left: 0;
+      li {
+        display: inline-flex;
+        align-items: flex-end;
+        flex-direction: column;
+        position: relative;
+        button {
+          cursor: pointer;
+          svg {
+            color: $brand;
+            font-size: 1.3rem;
+          }
         }
+      }
+
+      &.signIn {
+        width: 8rem;
+      }
+      &.signOut .Button {
+        margin-left: 5px;
       }
     }
   }

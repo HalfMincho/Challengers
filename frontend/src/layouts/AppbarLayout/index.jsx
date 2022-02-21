@@ -1,35 +1,52 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BsBookmark, BsCart3, BsPerson } from 'react-icons/bs';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  BsBookmark,
+  BsBookmarkFill,
+  BsCart,
+  BsCartFill,
+  BsPerson,
+  BsPersonFill,
+} from 'react-icons/bs';
 
 import Button from '@components/Button';
 import Searchbar from '@components/Searchbar';
 import SignInModal from '@components/Modal/SignIn';
-import './style.scss';
-import { useDispatch, useSelector } from 'react-redux';
+import Bookmark from '@components/DropDown/Bookmark';
 import { resetAccessToken, resetRefreshToken } from '@utils/helpers/tokensHelper';
-import accountSlice from '../../features/account/AccountSlice';
+import accountSlice from '@features/account/AccountSlice';
+import './style.scss';
+import Cart from '@components/DropDown/Cart';
+import Profile from '@components/DropDown/Profile';
 
 function AppbarContainerLink({ category, onClick }) {
   return (
-    <div className="appbar__container--link" onClick={onClick}>
-      <span className="appbar__link">{category}</span>
-    </div>
+    <ul className="appbar__container--link" onClick={onClick}>
+      <li className="appbar__link">{category}</li>
+    </ul>
   );
 }
 
 export default function AppbarLayout({ children }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const account = useSelector((state) => state.account);
   const category = ['건강', '역량', '정서', '자산', '생활', '취미'];
+
   const goResult = (name) => {
     navigate(`/list/search?category=${name}`);
     location.reload();
   };
 
-  const [signInModalVisible, setSignInModalVisible] = useState(false);
-  const account = useSelector((state) => state.account);
+  const handleLogout = () => {
+    resetAccessToken();
+    resetRefreshToken();
+    dispatch(accountSlice.actions.setLoggedOut());
+    navigate('/');
+  };
 
+  const [signInModalVisible, setSignInModalVisible] = useState(false);
   const openModal = () => {
     setSignInModalVisible(true);
   };
@@ -37,10 +54,25 @@ export default function AppbarLayout({ children }) {
     setSignInModalVisible(false);
   };
 
+  const [icons, setIcons] = useState({
+    bookmark: false,
+    cart: false,
+    profile: false,
+  });
+  const { bookmark, cart, profile } = icons;
+  const openDropDown = (e) => {
+    setIcons({ ...icons, [e.target.name]: true });
+  };
+  const closeDropDown = (e) => {
+    setTimeout(() => {
+      setIcons({ ...icons, [e.target.name]: false });
+    }, 2000);
+  };
+
   // eslint-disable-next-line no-unused-vars
-  const LogoutStatusButtons = (
+  const SignOutStatusButtons = (
     <>
-      <div className="appbar__container--buttons">
+      <div className="appbar__container--buttons signOut">
         <Link to="/signup">
           <Button color="gray" outline>
             회원가입
@@ -52,50 +84,44 @@ export default function AppbarLayout({ children }) {
     </>
   );
 
-  const handleLogout = () => {
-    resetAccessToken();
-    resetRefreshToken();
-    dispatch(accountSlice.actions.setLoggedOut());
-    navigate('/');
-  };
-
-  const LoginStatusButtons = (
+  const SignInStatusButtons = (
     <>
-      <div className="appbar__container--buttons">
-        <div className="button">
-          <button name="bookmark">
-            <BsBookmark />
+      <ul className="appbar__container--buttons signIn">
+        <li>
+          <button name="bookmark" onMouseEnter={openDropDown} onMouseLeave={closeDropDown}>
+            {bookmark ? <BsBookmarkFill /> : <BsBookmark />}
           </button>
-        </div>
-        <div className="button">
-          <button name="cart">
-            <BsCart3 />
+          <Bookmark visible={bookmark} />
+        </li>
+        <li>
+          <button name="cart" onMouseEnter={openDropDown} onMouseLeave={closeDropDown}>
+            {cart ? <BsCartFill /> : <BsCart />}
           </button>
-        </div>
-        <div className="button">
-          <button name="profile">
-            <BsPerson />
+          <Cart visible={cart} />
+        </li>
+        <li>
+          <button name="profile" onMouseEnter={openDropDown} onMouseLeave={closeDropDown}>
+            {profile ? <BsPersonFill /> : <BsPerson />}
           </button>
-        </div>
-      </div>
+          <Profile visible={profile} />
+        </li>
+      </ul>
     </>
   );
 
   return (
     <div className="layout__root">
       <div className="appbar__container">
-        <div className="appbar__container--logo">
-          <Link className="appbar__link" to="/">
-            <img alt="logo" src="/assets/logo_appbar.png" height={58} width={260} />
-          </Link>
-        </div>
-        <div className="appbar__container--category">
+        <Link to="/">
+          <img alt="logo" src="/assets/logo_appbar.png" height={58} width={260} />
+        </Link>
+        <nav className="appbar__container--category">
           {category.map((name, index) => (
             <AppbarContainerLink category={name} key={index} onClick={() => goResult(name)} />
           ))}
-        </div>
+        </nav>
         <Searchbar />
-        <div className="appbar__container--buttons">
+        {/* <div className="appbar__container--buttons">
           <Link to="/signup">
             <Button color="gray" outline>
               회원가입
@@ -106,9 +132,9 @@ export default function AppbarLayout({ children }) {
           ) : (
             <Button onClick={openModal}>로그인</Button>
           )}
-        </div>
-        {/* {LogoutStatusButtons} */}
-        {LoginStatusButtons}
+        </div> */}
+        {/* {SignOutStatusButtons} */}
+        {SignInStatusButtons}
       </div>
       <div className="layout__content--root">{children}</div>
       <div className="footer__space"></div>
