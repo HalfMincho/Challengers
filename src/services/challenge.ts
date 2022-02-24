@@ -80,11 +80,36 @@ export const GetChallenge = async (req: express.Request) => {
           ).replace(/-/gi, "")}")`,
         )) as [certificationArticleRow: { id: number }[], field: unknown];
 
+        const [[challengeStateInfo]] =
+          (await pool.execute(`SELECT is_open, is_participate, is_complete,
+        is_saved, is_in_basket FROM account_challenge WHERE account=UNHEX("${uuidStringify(
+          userUUID,
+        ).replace(/-/gi, "")}") AND challenge=UNHEX("${uuidStringify(
+            uuid,
+          ).replace(/-/gi, "")}")`)) as unknown as [
+            [
+              challengeStateInfo: {
+                is_open: number;
+                is_participate: number;
+                is_complete: number;
+                is_saved: number;
+                is_in_basket: number;
+              },
+            ],
+          ];
+
+        let refinedObject: { [k: string]: boolean } = {};
+
+        for (const [key, value] of Object.entries(challengeStateInfo)) {
+          refinedObject[key] = Boolean(value);
+        }
+
         return {
           ...challengeWithoutUUID,
           category: categoryName,
           submitter: username,
           cert_article: certificationArticleRow,
+          state: refinedObject,
         };
       }
 
