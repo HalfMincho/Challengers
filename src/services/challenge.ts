@@ -63,11 +63,7 @@ export const GetChallenge = async (req: express.Request) => {
 
   const refinedRow = await Promise.all(
     row.map(async (challenge: ChallengeFromDBWithUUID) => {
-      const [[{ name: categoryName }]] = (await pool.execute(
-        `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
-          challenge.category,
-        ).replace(/-/gi, "")}")`,
-      )) as unknown as [[{ name: string }]];
+      const categoryName = await GetCategoryFromUUID(challenge.category);
 
       const username = await GetNameFromUUID(challenge.submitter);
 
@@ -131,11 +127,7 @@ export const GetPopularChallenge = async (count: number) => {
 
   const refinedRows = await Promise.all(
     rows.map(async (challenge: ChallengeFromDB) => {
-      const [[{ name: categoryName }]] = (await pool.execute(
-        `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
-          challenge.category,
-        ).replace(/-/gi, "")}")`,
-      )) as unknown as [[{ name: string }]];
+      const categoryName = await GetCategoryFromUUID(challenge.category);
 
       const username = await GetNameFromUUID(challenge.submitter);
 
@@ -164,11 +156,7 @@ export const GetRecentChallenge = async (count: number) => {
 
   const refinedRows = await Promise.all(
     rows.map(async (challenge: ChallengeFromDB) => {
-      const [[{ name: categoryName }]] = (await pool.execute(
-        `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
-          challenge.category,
-        ).replace(/-/gi, "")}")`,
-      )) as unknown as [[{ name: string }]];
+      const categoryName = await GetCategoryFromUUID(challenge.category);
 
       const username = await GetNameFromUUID(challenge.submitter);
 
@@ -409,11 +397,7 @@ export const GetChallengeWithTitle = async (keyword: string, count: number) => {
 
   const refinedRows = await Promise.all(
     rows.map(async (challenge: ChallengeFromDB) => {
-      const [[{ name: categoryName }]] = (await pool.execute(
-        `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
-          challenge.category,
-        ).replace(/-/gi, "")}")`,
-      )) as unknown as [[{ name: string }]];
+      const categoryName = await GetCategoryFromUUID(challenge.category);
 
       const username = await GetNameFromUUID(challenge.submitter);
 
@@ -462,11 +446,7 @@ export const GetChallengeWithCategory = async (
 
   const refinedRows = await Promise.all(
     rows.map(async (challenge: ChallengeFromDB) => {
-      const [[{ name: categoryName }]] = (await pool.execute(
-        `SELECT name FROM category WHERE uuid=UNHEX("${uuidStringify(
-          challenge.category,
-        ).replace(/-/gi, "")}")`,
-      )) as unknown as [[{ name: string }]];
+      const categoryName = await GetCategoryFromUUID(challenge.category);
 
       const username = await GetNameFromUUID(challenge.submitter);
 
