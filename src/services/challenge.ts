@@ -24,6 +24,14 @@ const GetCategoryFromUUID = async (uuid: Buffer) => {
   return name;
 };
 
+const GetUserUUIDFromEmail = async (email: string) => {
+  const [[{ uuid: userUUID }]] = (await pool.execute(
+    `SELECT uuid FROM account WHERE email="${email}"`,
+  )) as unknown as [[{ uuid: Buffer }]];
+
+  return userUUID;
+};
+
 export const GetChallenge = async (req: express.Request) => {
   const { body }: { body: { email?: string } } = req;
 
@@ -66,9 +74,7 @@ export const GetChallenge = async (req: express.Request) => {
       const { uuid, ...challengeWithoutUUID } = challenge;
 
       if (body.email !== undefined) {
-        const [[{ uuid: userUUID }]] = (await pool.execute(
-          `SELECT uuid FROM account WHERE email="${body.email}"`,
-        )) as unknown as [[{ uuid: Buffer }]];
+        const userUUID = await GetUserUUIDFromEmail(body.email);
 
         const [certificationArticleRow] = (await pool.execute(
           `SELECT id FROM challenge_auth WHERE submitter=UNHEX("${uuidStringify(
@@ -209,9 +215,7 @@ export const PostChallenge = async (req: express.Request) => {
     `SELECT uuid FROM category WHERE name="${body.category}"`,
   )) as unknown as [[{ uuid: Buffer }]];
 
-  const [[{ uuid: userUUID }]] = (await pool.execute(
-    `SELECT uuid FROM account WHERE email="${body.email}"`,
-  )) as unknown as [[{ uuid: Buffer }]];
+  const userUUID = await GetUserUUIDFromEmail(body.email);
 
   const params = [
     challengeUUID,
@@ -480,9 +484,7 @@ export const GetChallengeWithCategory = async (
 export const GetOpenChallenge = async (req: express.Request) => {
   const { body }: { body: { email: string } } = req;
 
-  const [[{ uuid: userUUID }]] = (await pool.execute(
-    `SELECT uuid FROM account WHERE email="${body.email}"`,
-  )) as unknown as [[{ uuid: Buffer }]];
+  const userUUID = await GetUserUUIDFromEmail(body.email);
 
   const [challengeUUIDRow] = (await pool.execute(
     `SELECT challenge FROM account_challenge WHERE account=UNHEX("${uuidStringify(
@@ -517,9 +519,7 @@ export const GetOpenChallenge = async (req: express.Request) => {
 export const GetParticipateChallenge = async (req: express.Request) => {
   const { body }: { body: { email: string } } = req;
 
-  const [[{ uuid: userUUID }]] = (await pool.execute(
-    `SELECT uuid FROM account WHERE email="${body.email}"`,
-  )) as unknown as [[{ uuid: Buffer }]];
+  const userUUID = await GetUserUUIDFromEmail(body.email);
 
   const [challengeUUIDRow] = (await pool.execute(
     `SELECT challenge FROM account_challenge WHERE account=UNHEX("${uuidStringify(
@@ -570,9 +570,7 @@ export const JoinChallenge = async (req: express.Request) => {
     [{ uuid: Buffer }],
   ];
 
-  const [[{ uuid: userUUID }]] = (await pool.execute(
-    `SELECT uuid FROM account WHERE email="${body.email}"`,
-  )) as unknown as [[{ uuid: Buffer }]];
+  const userUUID = await GetUserUUIDFromEmail(body.email);
 
   const [[{ "COUNT(*)": checkAccountChallengeRowExist }]] = (await pool.execute(
     `SELECT COUNT(*) FROM account_challenge WHERE challenge=UNHEX("${uuidStringify(
@@ -624,9 +622,7 @@ export const JoinChallenge = async (req: express.Request) => {
 export const GetCompleteChallenge = async (req: express.Request) => {
   const { body }: { body: { email: string } } = req;
 
-  const [[{ uuid: userUUID }]] = (await pool.execute(
-    `SELECT uuid FROM account WHERE email="${body.email}"`,
-  )) as unknown as [[{ uuid: Buffer }]];
+  const userUUID = await GetUserUUIDFromEmail(body.email);
 
   const [challengeUUIDRow] = (await pool.execute(
     `SELECT challenge FROM account_challenge WHERE account=UNHEX("${uuidStringify(
@@ -677,9 +673,7 @@ export const MakeChallengeComplete = async (req: express.Request) => {
     [{ uuid: Buffer }],
   ];
 
-  const [[{ uuid: userUUID }]] = (await pool.execute(
-    `SELECT uuid FROM account WHERE email="${body.email}"`,
-  )) as unknown as [[{ uuid: Buffer }]];
+  const userUUID = await GetUserUUIDFromEmail(body.email);
 
   const [[{ "COUNT(*)": checkAccountChallengeRowExist }]] = (await pool.execute(
     `SELECT COUNT(*) FROM account_challenge WHERE challenge=UNHEX("${uuidStringify(
@@ -754,9 +748,7 @@ export const WriteCertificationArticle = async (req: express.Request) => {
     [{ uuid: Buffer }],
   ];
 
-  const [[{ uuid: userUUID }]] = (await pool.execute(
-    `SELECT uuid FROM account WHERE email="${body.email}"`,
-  )) as unknown as [[{ uuid: Buffer }]];
+  const userUUID = await GetUserUUIDFromEmail(body.email);
 
   try {
     const buffer = Buffer.alloc(16);
@@ -794,9 +786,7 @@ export const GetCertificationArticle = async (req: express.Request) => {
     return { status: 404, result: { error: "cert_article_not_exists" } };
   }
 
-  const [[{ uuid: userUUID }]] = (await pool.execute(
-    `SELECT uuid FROM account WHERE email="${body.email}"`,
-  )) as unknown as [[{ uuid: Buffer }]];
+  const userUUID = await GetUserUUIDFromEmail(body.email);
 
   const [challengeAuthRow] = (await pool.execute(
     `SELECT description, created_at FROM challenge_auth WHERE submitter=UNHEX("${uuidStringify(
