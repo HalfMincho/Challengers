@@ -1,0 +1,19 @@
+@import '@common/styles/base';
+
+.pageTitle {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.tagList {
+  margin: 1rem 0;
+  .Tag {
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    &:hover {
+      background-color: $line-gray;
+    }
+  }
+}
