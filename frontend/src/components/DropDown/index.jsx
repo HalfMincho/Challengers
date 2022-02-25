@@ -1,7 +1,7 @@
 import { FaChevronRight } from 'react-icons/fa';
 import './style.scss';
 
-export default function DropDown({ title, content, visible, signOut }) {
+export default function DropDown({ title, content, visible, signOut, handleLogout }) {
   return (
     <div className={`DropDownWrapper ${visible ? 'visible' : 'none'}`}>
       {title && (
@@ -13,7 +13,11 @@ export default function DropDown({ title, content, visible, signOut }) {
         </div>
       )}
       <div className="menuContent">{content}</div>
-      {signOut && <div className="signOut">로그아웃</div>}
+      {signOut && (
+        <div className="signOut" onClick={handleLogout}>
+          로그아웃
+        </div>
+      )}
     </div>
   );
 }

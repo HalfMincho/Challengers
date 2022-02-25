@@ -14,11 +14,11 @@ import Button from '@components/Button';
 import Searchbar from '@components/Searchbar';
 import SignInModal from '@components/Modal/SignIn';
 import Bookmark from '@components/DropDown/Bookmark';
+import Cart from '@components/DropDown/Cart';
+import Profile from '@components/DropDown/Profile';
 import { resetAccessToken, resetRefreshToken } from '@utils/helpers/tokensHelper';
 import accountSlice from '@features/account/AccountSlice';
 import './style.scss';
-import Cart from '@components/DropDown/Cart';
-import Profile from '@components/DropDown/Profile';
 
 function AppbarContainerLink({ category, onClick }) {
   return (
@@ -72,15 +72,15 @@ export default function AppbarLayout({ children }) {
   // eslint-disable-next-line no-unused-vars
   const SignOutStatusButtons = (
     <>
-      <div className="appbar__container--buttons signOut">
+      <div className="appbar__container--buttons">
         <Link to="/signup">
           <Button color="gray" outline>
             회원가입
           </Button>
         </Link>
         <Button onClick={openModal}>로그인</Button>
+        {signInModalVisible && <SignInModal visible={signInModalVisible} onClose={closeModal} />}
       </div>
-      {signInModalVisible && <SignInModal visible={signInModalVisible} onClose={closeModal} />}
     </>
   );
 
@@ -103,7 +103,7 @@ export default function AppbarLayout({ children }) {
           <button name="profile" onMouseEnter={openDropDown} onMouseLeave={closeDropDown}>
             {profile ? <BsPersonFill /> : <BsPerson />}
           </button>
-          <Profile visible={profile} />
+          <Profile visible={profile} handleLogout={handleLogout} />
         </li>
       </ul>
     </>
@@ -121,20 +121,7 @@ export default function AppbarLayout({ children }) {
           ))}
         </nav>
         <Searchbar />
-        {/* <div className="appbar__container--buttons">
-          <Link to="/signup">
-            <Button color="gray" outline>
-              회원가입
-            </Button>
-          </Link>
-          {account.isLoggedIn ? (
-            <Button onClick={handleLogout}>로그아웃</Button>
-          ) : (
-            <Button onClick={openModal}>로그인</Button>
-          )}
-        </div> */}
-        {/* {SignOutStatusButtons} */}
-        {SignInStatusButtons}
+        {account.isLoggedIn ? SignInStatusButtons : SignOutStatusButtons}
       </div>
       <div className="layout__content--root">{children}</div>
       <div className="footer__space"></div>
