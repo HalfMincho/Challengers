@@ -1,0 +1,19 @@
+@import '@common/styles/base';
+
+.ParticiPateBox {
+  margin-top: 2rem;
+  .Box.fullWidth {
+    justify-content: space-between;
+    border: 1px solid $line-gray;
+  }
+  .title {
+    border-radius: 10px 10px 0 0;
+    font-weight: 500;
+    border-bottom: 0 !important;
+  }
+  .content {
+    border-radius: 0 0 10px 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+}

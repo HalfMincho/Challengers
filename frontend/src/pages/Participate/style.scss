@@ -1,0 +1,56 @@
+@import '@common/styles/base';
+
+.listTitle {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.challengeInfo {
+  p {
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  span {
+    font-size: 0.9rem;
+  }
+  span + span {
+    margin-left: 10px;
+  }
+}
+
+.feeInfo {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  span + span {
+    margin-left: 10rem;
+  }
+  .bold {
+    font-weight: 500;
+  }
+}
+
+.paymentInfo {
+  font-weight: 500;
+  div {
+    display: flex;
+    flex-direction: column;
+  }
+  p + p {
+    margin-top: 10px;
+  }
+  .currentCash {
+    margin-left: 4.7rem;
+  }
+  .totalFee {
+    margin-left: 8.3rem;
+  }
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  .Button {
+    margin: 1rem 0 3rem 0;
+  }
+}

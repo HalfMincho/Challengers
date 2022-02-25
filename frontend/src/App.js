@@ -8,6 +8,7 @@ const Detail = lazy(() => import('@pages/Detail'));
 const Create = lazy(() => import('@pages/Create'));
 const SignUp = lazy(() => import('@pages/SignUp'));
 const Profile = lazy(() => import('@pages/Profile'));
+const Participate = lazy(() => import('@pages/Participate'));
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route element={<Create />} path="/create" />
           <Route element={<SignUp />} path="/signup" />
           <Route element={<Profile />} path="/profile" />
+          <Route element={<Participate />} path="/participate" />
         </Routes>
       </div>
     </Suspense>
