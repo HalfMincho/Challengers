@@ -19,6 +19,7 @@ import {
   MakeChallengeSaved,
   MakeChallengeUnSaved,
   AddChallengeToBasket,
+  RemoveChallengeFromBasket,
 } from "../services/challenge";
 import { Category } from "../types/challenge";
 
@@ -205,6 +206,16 @@ challengeRouter.post(
   AuthJWT,
   wrap(async (req: express.Request, res: express.Response) => {
     const { status, result } = await AddChallengeToBasket(req);
+    res.status(status);
+    res.send(result);
+  }),
+);
+
+challengeRouter.delete(
+  "/:id/basket",
+  AuthJWT,
+  wrap(async (req: express.Request, res: express.Response) => {
+    const { status, result } = await RemoveChallengeFromBasket(req);
     res.status(status);
     res.send(result);
   }),

@@ -1001,3 +1001,64 @@ export const AddChallengeToBasket = async (req: express.Request) => {
     }
   }
 };
+
+export const RemoveChallengeFromBasket = async (req: express.Request) => {
+  const { body }: { body: { email: string } } = req;
+  const id = Number(req.params.id);
+  if (isNaN(id)) {
+    return { status: 400, result: { error: "invalid_id" } };
+  }
+
+  const checkChallengeExist = (await pool.execute(
+    `SELECT uuid FROM challenge WHERE id=${id}`,
+  )) as [result: Array<Object>, field: unknown];
+
+  if (checkChallengeExist[0].length < 1) {
+    return { status: 404, result: { error: "challenge_not_exists" } };
+  }
+
+  const [[{ uuid: challengeUUID }]] = checkChallengeExist as unknown as [
+    [{ uuid: Buffer }],
+  ];
+
+  const userUUID = await GetUserUUIDFromEmail(body.email);
+
+  const [[{ "COUNT(*)": checkAccountChallengeRowExist }]] = (await pool.execute(
+    `SELECT COUNT(*) FROM account_challenge WHERE challenge=UNHEX("${uuidStringify(
+      challengeUUID,
+    ).replace(/-/gi, "")}") AND account=UNHEX("${uuidStringify(
+      userUUID,
+    ).replace(/-/gi, "")}") AND is_in_basket=true`,
+  )) as unknown as [[{ "COUNT(*)": number }]];
+
+  if (checkAccountChallengeRowExist === 1) {
+    try {
+      await (await pool.getConnection()).beginTransaction();
+
+      await pool.execute(
+        `UPDATE account_challenge SET is_in_basket=false WHERE challenge=UNHEX("${uuidStringify(
+          challengeUUID,
+        ).replace(/-/gi, "")}") AND account=UNHEX("${uuidStringify(
+          userUUID,
+        ).replace(/-/gi, "")}")`,
+      );
+
+      await (await pool.getConnection()).commit();
+
+      return { status: 200, result: { removed: id } };
+    } catch (e) {
+      await (await pool.getConnection()).rollback();
+
+      console.error(e);
+
+      return { status: 500, result: { error: "exception_occurred" } };
+    }
+  } else if (checkAccountChallengeRowExist === 0) {
+    return {
+      status: 404,
+      result: { failed: "challenge_is_not_already_in_basket" },
+    };
+  } else {
+    return { status: 500, result: { error: "exception_occurred" } };
+  }
+};
