@@ -137,25 +137,20 @@ export const GetPopularChallenge = async (count: number) => {
   }
 
   const [rows] = (await pool.execute(
-    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
-    auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
-    start_at, end_at, cost, description, reg_date, views
-    FROM challenge ORDER BY views desc LIMIT 0, ${count}`,
+    `SELECT id, account.name as submmiter, category.name as category, challenge.name as name,
+    auth_way, auth_day, auth_count_in_day,
+    auth_start_time, auth_end_time, can_auth_all_time,
+    start_at, end_at, cost, description, reg_date, views FROM challenge
+    LEFT JOIN category ON challenge.category = category.uuid
+    LEFT JOIN account ON challenge.submitter = account.uuid
+    ORDER BY views DESC LIMIT 0, ${count}`,
   )) as [rows: ChallengeFromDB[], field: unknown];
 
-  const refinedRows = await Promise.all(
-    rows.map(async (challenge: ChallengeFromDB) => {
-      const categoryName = await GetCategoryFromUUID(challenge.category);
+  const refinedRows = rows.map((row) => {
+    row.can_auth_all_time = Boolean(row.auth_count_in_day);
 
-      const username = await GetNameFromUUID(challenge.submitter);
-
-      return {
-        ...challenge,
-        category: categoryName,
-        submitter: username,
-      };
-    }),
-  );
+    return row;
+  });
 
   return { status: 200, result: refinedRows };
 };
@@ -166,25 +161,20 @@ export const GetRecentChallenge = async (count: number) => {
   }
 
   const [rows] = (await pool.execute(
-    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
-    auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
-    start_at, end_at, cost, description, reg_date, views
-    FROM challenge ORDER BY reg_date desc LIMIT 0, ${count}`,
+    `SELECT id, account.name as submmiter, category.name as category, challenge.name as name,
+    auth_way, auth_day, auth_count_in_day,
+    auth_start_time, auth_end_time, can_auth_all_time,
+    start_at, end_at, cost, description, reg_date, views FROM challenge
+    LEFT JOIN category ON challenge.category = category.uuid
+    LEFT JOIN account ON challenge.submitter = account.uuid
+    ORDER BY reg_date DESC LIMIT 0, ${count}`,
   )) as [rows: ChallengeFromDB[], field: unknown];
 
-  const refinedRows = await Promise.all(
-    rows.map(async (challenge: ChallengeFromDB) => {
-      const categoryName = await GetCategoryFromUUID(challenge.category);
+  const refinedRows = rows.map((row) => {
+    row.can_auth_all_time = Boolean(row.auth_count_in_day);
 
-      const username = await GetNameFromUUID(challenge.submitter);
-
-      return {
-        ...challenge,
-        category: categoryName,
-        submitter: username,
-      };
-    }),
-  );
+    return row;
+  });
 
   return { status: 200, result: refinedRows };
 };
