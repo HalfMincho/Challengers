@@ -500,21 +500,20 @@ export const GetParticipateChallenge = async (req: express.Request) => {
   const refinedRows = await Promise.all(
     challengeUUIDRow.map(async (singleChallenge: { challenge: Buffer }) => {
       const [[challenge]] = (await pool.execute(
-        `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
-    auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
-    start_at, end_at, cost, description, reg_date, views FROM challenge WHERE uuid=UNHEX("${uuidStringify(
-      singleChallenge.challenge,
-    ).replace(/-/gi, "")}")`,
+        `SELECT id, account.name as submitter, category.name as category, challenge.name as name,
+        auth_way, auth_day, auth_count_in_day,
+        auth_start_time, auth_end_time, can_auth_all_time,
+        start_at, end_at, cost, description, reg_date, views FROM challenge
+        LEFT JOIN category ON challenge.category = category.uuid
+        LEFT JOIN account ON challenge.submitter = account.uuid
+        WHERE challenge.uuid=UNHEX("${uuidStringify(
+          singleChallenge.challenge,
+        ).replace(/-/gi, "")}")`,
       )) as unknown as [[challenge: ChallengeFromDB]];
 
-      const username = await GetNameFromUUID(challenge.submitter);
-      const categoryName = await GetCategoryFromUUID(challenge.category);
+      challenge.can_auth_all_time = Boolean(challenge.can_auth_all_time);
 
-      return {
-        ...challenge,
-        category: categoryName,
-        submitter: username,
-      };
+      return challenge;
     }),
   );
 
