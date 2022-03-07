@@ -433,33 +433,21 @@ export const GetChallengeWithCategory = async (
     return { status: 400, result: { error: "invalid_query_params" } };
   }
 
-  const [[{ uuid: categoryUUID }]] = (await pool.execute(
-    `SELECT uuid FROM category WHERE name="${categoryFromReq}"`,
-  )) as unknown as [[{ uuid: Buffer }]];
-
   const [rows] = (await pool.execute(
-    `SELECT id, submitter, category, name, auth_way, auth_day, auth_count_in_day,
-    auth_start_time, auth_end_time, IF(can_auth_all_time, 'true', 'false') as can_auth_all_time,
+    `SELECT id, account.name as submitter, category.name as category, challenge.name as name,
+    auth_way, auth_day, auth_count_in_day,
+    auth_start_time, auth_end_time, can_auth_all_time,
     start_at, end_at, cost, description, reg_date, views FROM challenge
-    WHERE category=UNHEX("${uuidStringify(categoryUUID).replace(
-      /-/gi,
-      "",
-    )}") ORDER BY views desc LIMIT 0, ${count}`,
+    LEFT JOIN category ON challenge.category = category.uuid
+    LEFT JOIN account ON challenge.submitter = account.uuid
+    WHERE category.name='${categoryFromReq}' ORDER BY views desc LIMIT 0, ${count}`,
   )) as [rows: ChallengeFromDB[], field: unknown];
 
-  const refinedRows = await Promise.all(
-    rows.map(async (challenge: ChallengeFromDB) => {
-      const categoryName = await GetCategoryFromUUID(challenge.category);
+  const refinedRows = rows.map((row) => {
+    row.can_auth_all_time = Boolean(row.can_auth_all_time);
 
-      const username = await GetNameFromUUID(challenge.submitter);
-
-      return {
-        ...challenge,
-        category: categoryName,
-        submitter: username,
-      };
-    }),
-  );
+    return row;
+  });
 
   return { status: 200, result: refinedRows };
 };
