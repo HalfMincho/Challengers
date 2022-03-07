@@ -22,8 +22,8 @@ export type ChallengeFromRequest = {
 
 export type ChallengeFromDB = {
   id: number;
-  submitter: Buffer;
-  category: Buffer;
+  submitter: string;
+  category: string;
   name: string;
   auth_way: string;
   auth_day: string;
